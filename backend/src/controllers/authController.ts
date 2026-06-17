@@ -77,3 +77,63 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     next(error);
   }
 };
+
+// @desc    Get user profile
+// @route   GET /api/v1/auth/me
+// @access  Private
+export const getMe = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await User.findById((req as any).user?._id);
+    if (!user) {
+      res.status(404);
+      return next(new Error('User not found'));
+    }
+    res.json({
+      success: true,
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update user profile
+// @route   PATCH /api/v1/auth/profile
+// @access  Private
+export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await User.findById((req as any).user?._id);
+
+    if (!user) {
+      res.status(404);
+      return next(new Error('User not found'));
+    }
+
+    if (req.body.name) {
+      user.name = req.body.name;
+    }
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      success: true,
+      data: {
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

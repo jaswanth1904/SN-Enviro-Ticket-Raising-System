@@ -1,0 +1,134 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+import { Hexagon, Lock, Mail, ArrowRight } from 'lucide-react';
+
+export const Login: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      if (response.data.success) {
+        login(response.data.data);
+        navigate('/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-4">
+      <div className="w-full max-w-[1000px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+        
+        {/* Left Side: Colorful Branding */}
+        <div className="md:w-1/2 bg-blue-600 p-12 text-white flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-700 opacity-90 z-0"></div>
+          
+          {/* Decorative circles */}
+          <div className="absolute top-[-10%] left-[-10%] w-64 h-64 rounded-full bg-blue-400 opacity-20 blur-3xl z-0"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-80 h-80 rounded-full bg-indigo-400 opacity-20 blur-3xl z-0"></div>
+
+          <div className="relative z-10">
+            <div className="flex items-center space-x-3 mb-12">
+              <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
+                <Hexagon className="h-8 w-8 text-white" />
+              </div>
+              <span className="text-2xl font-bold tracking-wider">SN ENVIRO</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+              Hardware <br/> Service Portal
+            </h1>
+            <p className="text-blue-100 text-lg max-w-sm leading-relaxed">
+              Log in to manage telemetry systems, track field requests, and monitor network health across all stations.
+            </p>
+          </div>
+
+          <div className="relative z-10 mt-12 pt-8 border-t border-blue-400/30">
+            <p className="text-sm text-blue-200">
+              © 2026 SN Enviro Systems. All rights reserved.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Side: Login Form */}
+        <div className="md:w-1/2 p-12 flex items-center bg-white">
+          <div className="w-full max-w-sm mx-auto">
+            <div className="mb-10 text-center md:text-left">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+              <p className="text-gray-500">Sign in to your admin account.</p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-6">
+              {error && (
+                <div className="p-4 rounded-xl bg-red-50 text-red-600 border border-red-100 text-sm font-medium flex items-center">
+                  <div className="w-2 h-2 rounded-full bg-red-600 mr-2"></div>
+                  {error}
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-700 tracking-wide" htmlFor="email">Email Address</label>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="admin@snenviro.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all font-medium placeholder:text-gray-400 placeholder:font-normal"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-bold text-gray-700 tracking-wide" htmlFor="password">Password</label>
+                  <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">Forgot password?</a>
+                </div>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                  <input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all font-medium placeholder:text-gray-400 placeholder:font-normal"
+                  />
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={isLoading}
+                className="w-full py-3.5 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold tracking-wide shadow-lg shadow-blue-200 transition-all disabled:opacity-70 flex items-center justify-center group"
+              >
+                {isLoading ? 'Authenticating...' : 'Sign In'}
+                {!isLoading && <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
