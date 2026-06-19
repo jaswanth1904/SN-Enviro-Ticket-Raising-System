@@ -45,8 +45,8 @@ export const Login: React.FC = () => {
 
           <div className="relative z-10">
             <div className="flex items-center space-x-3 mb-12">
-              <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
-                <Hexagon className="h-8 w-8 text-white" />
+              <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
+                <img src="/logo.jpeg" alt="Logo" className="h-10 w-10 object-contain drop-shadow-md rounded-full" />
               </div>
               <span className="text-2xl font-bold tracking-wider">SN ENVIRO</span>
             </div>

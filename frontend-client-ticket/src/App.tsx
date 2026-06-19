@@ -1,12 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, MapPin, Send, Hexagon, WifiOff } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import api from '../services/api';
+import { Camera, Send, Hexagon, WifiOff } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
+import api from './services/api';
 import { motion } from 'framer-motion';
 
-export const TicketForm: React.FC = () => {
-  const navigate = useNavigate();
+export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [stations, setStations] = useState<any[]>([]);
@@ -24,14 +22,6 @@ export const TicketForm: React.FC = () => {
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
   useEffect(() => {
-    // Fetch stations safely
-    api.get('/stations')
-      .then(res => {
-        if(res.data && res.data.data) {
-           setStations(res.data.data);
-        }
-      })
-      .catch(console.error);
     // Network connectivity listeners
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -79,8 +69,10 @@ export const TicketForm: React.FC = () => {
 
       const res = await api.post('/tickets', payload);
       if (res.data.success) {
-        toast.success('Issue Registered Successfully');
-        navigate('/dashboard'); // or /tickets
+        toast.success('Ticket submitted successfully! We will get in touch shortly.');
+        setFormData({ stationId: '', manualStationName: '', locationDetails: '', subject: '', telemetryIssueType: '', description: '' });
+        setImage(null);
+        setImagePreview(null);
       }
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Failed to submit ticket');
@@ -90,31 +82,15 @@ export const TicketForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto w-full pb-20 mt-4 md:mt-0 p-4">
-      {/* Offline Overlay */}
-      {!isOnline && (
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
-        >
-          <motion.div 
-            animate={{ scale: [1, 1.1, 1] }} 
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="mb-4 text-red-500"
-          >
-            <WifiOff className="h-16 w-16 mx-auto" />
-          </motion.div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Internet Connection</h2>
-          <p className="text-gray-600">Please connect to a network to submit telemetry reports. Your data is not currently syncing.</p>
-        </motion.div>
-      )}
+    <>
+      <Toaster position="top-center" />
+      <div className="max-w-md mx-auto w-full pb-20 mt-4 md:mt-0 p-4">
 
       <div className="mb-8 text-center mt-4">
         <div className="flex items-center justify-center mb-3">
-          <Hexagon className="h-10 w-10 text-primary mr-2 drop-shadow-sm" />
+          <img src="/logo.jpeg" alt="Logo" className="h-12 w-12 object-contain mr-2 drop-shadow-sm rounded-full" />
         </div>
-        <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">SN Enviro Ticket Raising Portal</h2>
+        <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">SN enviro Ticket System</h2>
         <p className="text-gray-600 text-sm mt-3 leading-relaxed max-w-[280px] mx-auto">
           Instantly dispatch field issues to the central dashboard. 
           Ensure all facility data is highly accurate for rapid triage.
@@ -239,10 +215,9 @@ export const TicketForm: React.FC = () => {
       </form>
 
       <div className="mt-12 text-center pb-8">
-        <Link to="/login" className="text-gray-400 hover:text-primary text-sm transition-colors">
-          Admin Login Portal
-        </Link>
+        <p className="text-gray-400 text-sm">Powered by SN Enviro Systems</p>
       </div>
     </div>
+    </>
   );
-};
+}

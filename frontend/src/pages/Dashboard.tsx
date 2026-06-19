@@ -4,6 +4,7 @@ import { Ticket, AlertTriangle, CheckCircle, Clock, Activity } from 'lucide-reac
 import api from '../services/api';
 import { useSocket } from '../context/SocketContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 export const Dashboard: React.FC = () => {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -57,6 +58,20 @@ export const Dashboard: React.FC = () => {
     const slaTarget = 48; // 48 hours SLA
     return Math.max(0, Math.floor(slaTarget - hoursElapsed));
   };
+
+  // Chart Data Processing
+  const issueDistribution = tickets.reduce((acc: any, ticket) => {
+    const type = ticket.telemetryIssueType || 'General Issue';
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {});
+
+  const pieData = Object.keys(issueDistribution).map(key => ({
+    name: key,
+    value: issueDistribution[key]
+  }));
+
+  const COLORS = ['#22d3ee', '#fbbf24', '#f87171', '#34d399', '#818cf8', '#a78bfa'];
 
   if (loading) return <div className="p-8 text-cyan-400 animate-pulse font-medium">Initializing Executive Telemetry...</div>;
 
@@ -146,9 +161,40 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="xl:col-span-3 bg-card/80 backdrop-blur-sm rounded-xl border border-border p-6 shadow-sm flex flex-col h-[500px] justify-center items-center">
-             <Activity className="h-16 w-16 text-cyan-400/20 mb-4 animate-pulse" />
-             <p className="text-gray-500 font-mono text-sm">System Nominal</p>
+        <div className="xl:col-span-3 bg-card/80 backdrop-blur-sm rounded-xl border border-border p-6 shadow-sm flex flex-col h-[500px]">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Anomaly Distribution</h3>
+          {tickets.length > 0 ? (
+            <div style={{ width: '100%', height: 350 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={80}
+                    outerRadius={120}
+                    paddingAngle={5}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                    itemStyle={{ color: '#1f2937', fontWeight: 600 }}
+                  />
+                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col justify-center items-center">
+              <Activity className="h-16 w-16 text-cyan-400/20 mb-4 animate-pulse" />
+              <p className="text-gray-500 font-mono text-sm">System Nominal - No Data</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

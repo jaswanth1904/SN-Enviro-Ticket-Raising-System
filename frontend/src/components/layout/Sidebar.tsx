@@ -14,7 +14,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
   const { user } = useAuth();
   
   const navItems = [
-    { label: 'Field Portal', icon: Ticket, path: '/tickets/new', showTo: ['admin', 'field_engineer'] },
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', showTo: ['admin'] },
     { label: 'Tickets', icon: Ticket, path: '/tickets', showTo: ['admin'] },
     { label: 'Operators', icon: Users, path: '/users', showTo: ['admin'] },
@@ -27,7 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
     <aside className={cn("flex flex-col w-64 bg-card/80 backdrop-blur-xl border-r border-border h-screen fixed top-0 left-0 z-50", className)}>
       <div className="h-16 flex items-center justify-between px-6 border-b border-border">
         <div className="flex items-center">
-          <Hexagon className="h-8 w-8 text-primary mr-2 drop-shadow-sm" />
+          <img src="/logo.jpeg" alt="Logo" className="h-8 w-8 object-contain mr-2 drop-shadow-sm rounded-full" />
           <h1 className="text-xl font-bold text-gray-900 tracking-tight">SN Enviro</h1>
         </div>
         {onClose && (

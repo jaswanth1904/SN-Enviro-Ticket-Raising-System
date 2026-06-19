@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider, useSocket } from './context/SocketContext';
 import { PageLayout } from './components/layout/PageLayout';
@@ -8,7 +8,6 @@ import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Tickets } from './pages/Tickets';
 import { TicketDetail } from './pages/TicketDetail';
-import { TicketForm } from './pages/TicketForm';
 import { Users } from './pages/Users';
 import { Settings } from './pages/Settings';
 
@@ -23,14 +22,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (user?.role !== 'admin') return <Navigate to="/tickets/new" replace />;
+  if (user?.role !== 'admin') return <Navigate to="/login" replace />;
   return <PageLayout>{children}</PageLayout>;
 };
 
 const RootRedirect = () => {
-  const { user } = useAuth();
-  if (user?.role === 'field_engineer') return <Navigate to="/tickets/new" replace />;
-  return <Navigate to="/dashboard" replace />;
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  return <Navigate to="/login" replace />;
 };
 
 const AppRoutes = () => {
@@ -57,7 +56,6 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/tickets/new" element={<TicketForm />} />
       
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       {/* Admin only routes */}
@@ -66,7 +64,7 @@ const AppRoutes = () => {
       <Route path="/tickets/:id" element={<AdminRoute><TicketDetail /></AdminRoute>} />
       <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
 
-      <Route path="/" element={<Navigate to="/tickets/new" replace />} />
+      <Route path="/" element={<RootRedirect />} />
     </Routes>
   );
 };
