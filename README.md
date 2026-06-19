@@ -26,6 +26,10 @@ This ecosystem bridges the gap between on-site field engineers (who report issue
 
 This project leverages a robust, multi-language tech stack optimized for performance, scalability, and cross-platform compatibility.
 
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=ts,dart,cpp,cmake,css,js,react,tailwind,vite,nodejs,express,mongodb,flutter" alt="Tech Stack Images" />
+</p>
+
 ### Language Breakdown
 * **TypeScript:** `48.7%`
 * **Dart:** `20.3%`
@@ -79,14 +83,10 @@ The brain of the operation, handling all business logic, routing, and database t
 * MongoDB Instance (Local or Atlas)
 * SMTP Credentials (for Email Dispatching)
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/jaswanth1904/SN-Enviro-Ticket-Raising-System.git
-   cd SN-Enviro-Ticket-Raising-System
 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
 
 📝 License
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+✨ Built and Deployed by Jaswanth ✨
