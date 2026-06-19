@@ -9,6 +9,11 @@ export interface ITicket extends Document {
   description: string;
   status: 'Pending' | 'In-Progress' | 'Resolved';
   s3ImageUrl?: string;
+  telemetryIssueType?: string;
+  fieldEngineerLocation?: {
+    type: 'Point';
+    coordinates: number[];
+  };
   notes?: string;
 }
 
@@ -28,7 +33,7 @@ const ticketSchema = new Schema<ITicket>(
     creatorId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
     },
     assignedTo: {
       type: Schema.Types.ObjectId,
@@ -51,6 +56,19 @@ const ticketSchema = new Schema<ITicket>(
     s3ImageUrl: {
       type: String,
       default: null,
+    },
+    telemetryIssueType: {
+      type: String,
+    },
+    fieldEngineerLocation: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number],
+      },
     },
     notes: {
       type: String,
@@ -86,6 +104,8 @@ ticketSchema.pre('save', async function () {
 
   this.ticketId = `${prefix}${nextNumber}`;
 });
+
+ticketSchema.index({ fieldEngineerLocation: '2dsphere' });
 
 const Ticket = mongoose.model<ITicket>('Ticket', ticketSchema);
 export default Ticket;

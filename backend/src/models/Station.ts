@@ -3,10 +3,11 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IStation extends Document {
   stationNumber: string;
   industryName: string;
-  location: {
-    lat: number;
-    lng: number;
-    address?: string;
+  district?: string;
+  state?: string;
+  coordinates: {
+    type: 'Point';
+    coordinates: number[];
   };
   deviceTypes: string[];
 }
@@ -23,17 +24,23 @@ const stationSchema = new Schema<IStation>(
       type: String,
       required: true,
     },
-    location: {
-      lat: {
-        type: Number,
-        required: true,
-      },
-      lng: {
-        type: Number,
-        required: true,
-      },
-      address: {
+    district: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    coordinates: {
+      type: {
         type: String,
+        enum: ['Point'],
+        required: true,
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+        default: [0, 0], // [longitude, latitude]
       },
     },
     deviceTypes: {
@@ -45,6 +52,8 @@ const stationSchema = new Schema<IStation>(
     timestamps: true,
   }
 );
+
+stationSchema.index({ coordinates: '2dsphere' });
 
 const Station = mongoose.model<IStation>('Station', stationSchema);
 export default Station;

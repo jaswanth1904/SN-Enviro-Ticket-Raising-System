@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'SN Enviro Mobile',
-        theme: AppTheme.darkTheme,
+        theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {

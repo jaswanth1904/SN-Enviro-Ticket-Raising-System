@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +15,7 @@ class TicketFormPage extends StatefulWidget {
 class _TicketFormPageState extends State<TicketFormPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _stationIdController = TextEditingController();
+  final _locationController = TextEditingController();
   final _subjectController = TextEditingController();
   final _descriptionController = TextEditingController();
   File? _imageFile;
@@ -32,6 +34,7 @@ class _TicketFormPageState extends State<TicketFormPage> with SingleTickerProvid
   @override
   void dispose() {
     _stationIdController.dispose();
+    _locationController.dispose();
     _subjectController.dispose();
     _descriptionController.dispose();
     _dialogAnimController.dispose();
@@ -49,11 +52,12 @@ class _TicketFormPageState extends State<TicketFormPage> with SingleTickerProvid
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      final combinedDescription = 'Location: ${_locationController.text}\n\n${_descriptionController.text}';
       context.read<TicketBloc>().add(
         SubmitTicketEvent(
           stationId: _stationIdController.text,
           subject: _subjectController.text,
-          description: _descriptionController.text,
+          description: combinedDescription,
           rawImage: _imageFile,
         ),
       );
@@ -65,12 +69,12 @@ class _TicketFormPageState extends State<TicketFormPage> with SingleTickerProvid
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.8),
+      barrierColor: Colors.black.withOpacity(0.4),
       builder: (_) => ScaleTransition(
         scale: _scaleAnimation,
         child: AlertDialog(
-          backgroundColor: const Color(0xFF1E293B), // Slate 800
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: color.withOpacity(0.5))),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           contentPadding: const EdgeInsets.all(32),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -81,15 +85,15 @@ class _TicketFormPageState extends State<TicketFormPage> with SingleTickerProvid
                 child: Icon(icon, size: 48, color: color),
               ),
               const SizedBox(height: 24),
-              Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+              Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)),
               const SizedBox(height: 12),
-              Text(subtitle, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 15, height: 1.5)),
+              Text(subtitle, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF666666), fontSize: 15, height: 1.5)),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: color,
+                    backgroundColor: const Color(0xFF007AFF),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
@@ -97,12 +101,13 @@ class _TicketFormPageState extends State<TicketFormPage> with SingleTickerProvid
                     Navigator.pop(context);
                     setState(() {
                       _stationIdController.clear();
+                      _locationController.clear();
                       _subjectController.clear();
                       _descriptionController.clear();
                       _imageFile = null;
                     });
                   },
-                  child: const Text('CONTINUE', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                  child: const Text('Continue', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                 ),
               )
             ],
@@ -115,152 +120,140 @@ class _TicketFormPageState extends State<TicketFormPage> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Slate 900
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF1E3A8A), Color(0xFF0F172A)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
+        title: const Text('Raise Field Ticket', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1.0),
+          child: Container(color: const Color(0xFFE5E5EA), height: 1.0),
         ),
-        title: const Text('Raise Field Ticket', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
       ),
       body: BlocConsumer<TicketBloc, TicketState>(
         listener: (context, state) {
           if (state is TicketSuccess) {
-            _showAnimatedDialog('Ticket Sent', 'Admin has been notified. Resolution target: 24-48 business hours.', Icons.check_circle_outline, const Color(0xFF10B981));
+            _showAnimatedDialog('Ticket Sent', 'Admin has been notified. Resolution target: 24-48 business hours.', Icons.check_circle, const Color(0xFF34C759));
           } else if (state is TicketOfflineSaved) {
-            _showAnimatedDialog('Saved Offline', 'No network detected. Ticket stored as draft and will upload automatically.', Icons.cloud_off, const Color(0xFFF59E0B));
+            _showAnimatedDialog('Saved Offline', 'No network detected. Ticket stored as draft and will upload automatically.', Icons.cloud_off, const Color(0xFFFF9500));
           } else if (state is TicketError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.redAccent, behavior: SnackBarBehavior.floating));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: const Color(0xFFFF3B30), behavior: SnackBarBehavior.floating));
           }
         },
         builder: (context, state) {
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Station Details Section
-                    _buildSectionTitle('Location Data', Icons.location_on),
-                    const SizedBox(height: 16),
-                    _buildGlassCard(
-                      child: TextFormField(
-                        controller: _stationIdController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: const InputDecoration(labelText: 'Station ID (e.g., STN-260)', prefixIcon: Icon(Icons.qr_code_scanner, color: Color(0xFF3B82F6))),
-                        validator: (v) => v!.isEmpty ? 'Required' : null,
-                      ),
+                    _buildSectionTitle('LOCATION DETAILS'),
+                    const SizedBox(height: 8),
+                    _buildFormCard(
+                      children: [
+                        TextFormField(
+                          controller: _stationIdController,
+                          decoration: const InputDecoration(
+                            labelText: 'Station Name',
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            fillColor: Colors.transparent,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const Divider(height: 1, color: Color(0xFFE5E5EA), indent: 16),
+                        TextFormField(
+                          controller: _locationController,
+                          decoration: const InputDecoration(
+                            labelText: 'Location',
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            fillColor: Colors.transparent,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
                     
-                    // Metadata Section
-                    _buildSectionTitle('Issue Metadata', Icons.report_problem),
-                    const SizedBox(height: 16),
-                    _buildGlassCard(
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _subjectController,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: const InputDecoration(labelText: 'Issue Subject', prefixIcon: Icon(Icons.short_text, color: Color(0xFF3B82F6))),
-                            validator: (v) => v!.isEmpty ? 'Required' : null,
+                    _buildSectionTitle('ISSUE DETAILS'),
+                    const SizedBox(height: 8),
+                    _buildFormCard(
+                      children: [
+                        TextFormField(
+                          controller: _subjectController,
+                          decoration: const InputDecoration(
+                            labelText: 'Issue Subject',
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            fillColor: Colors.transparent,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _descriptionController,
-                            style: const TextStyle(color: Colors.white),
-                            maxLines: 4,
-                            decoration: const InputDecoration(labelText: 'Detailed Description', alignLabelWithHint: true),
-                            validator: (v) => v!.isEmpty ? 'Required' : null,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const Divider(height: 1, color: Color(0xFFE5E5EA), indent: 16),
+                        TextFormField(
+                          controller: _descriptionController,
+                          maxLines: 4,
+                          decoration: const InputDecoration(
+                            labelText: 'Detailed Description',
+                            alignLabelWithHint: true,
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            fillColor: Colors.transparent,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           ),
-                        ],
-                      ),
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
 
-                    // Media Section
-                    _buildSectionTitle('Media Evidence', Icons.camera),
-                    const SizedBox(height: 16),
+                    _buildSectionTitle('MEDIA EVIDENCE'),
+                    const SizedBox(height: 8),
                     InkWell(
                       onTap: _takePicture,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(10),
                       child: Container(
-                        height: 160,
+                        height: 180,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E293B).withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: _imageFile != null
-                            ? Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.file(_imageFile!, fit: BoxFit.cover)),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                                      gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.center, colors: [Colors.black.withOpacity(0.7), Colors.transparent]),
-                                    ),
-                                  ),
-                                  const Positioned(bottom: 12, right: 12, child: Icon(Icons.refresh, color: Colors.white, size: 28)),
-                                ],
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: kIsWeb 
+                                  ? Image.network(_imageFile!.path, fit: BoxFit.cover)
+                                  : Image.file(_imageFile!, fit: BoxFit.cover),
                               )
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(color: const Color(0xFF3B82F6).withOpacity(0.1), shape: BoxShape.circle),
-                                    child: const Icon(Icons.camera_alt, size: 32, color: Color(0xFF3B82F6)),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Text('Tap to capture field evidence', style: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w500)),
+                                  const Icon(Icons.camera_alt, size: 40, color: Color(0xFF007AFF)),
+                                  const SizedBox(height: 12),
+                                  Text('Tap to Capture Image', style: TextStyle(color: const Color(0xFF007AFF).withOpacity(0.8), fontWeight: FontWeight.w500, fontSize: 16)),
                                 ],
                               ),
                       ),
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 40),
 
-                    // Submit Button
                     if (state is TicketLoading)
-                      const Center(child: CircularProgressIndicator())
+                      const Center(child: CircularProgressIndicator(color: Color(0xFF007AFF)))
                     else
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(color: const Color(0xFF3B82F6).withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 6)),
-                          ],
-                          gradient: const LinearGradient(colors: [Color(0xFF2563EB), Color(0xFF3B82F6)]),
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          ),
-                          onPressed: _submit,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.cloud_upload, size: 20),
-                              SizedBox(width: 8),
-                              Text('SUBMIT TICKET', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-                            ],
-                          ),
-                        ),
+                      ElevatedButton(
+                        onPressed: _submit,
+                        child: const Text('Submit Ticket'),
                       ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -271,28 +264,30 @@ class _TicketFormPageState extends State<TicketFormPage> with SingleTickerProvid
     );
   }
 
-  Widget _buildSectionTitle(String title, IconData icon) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.white, size: 20),
-        const SizedBox(width: 8),
-        Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-      ],
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0, bottom: 4.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Color(0xFF8E8E93),
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.1,
+        ),
+      ),
     );
   }
 
-  Widget _buildGlassCard({required Widget child}) {
+  Widget _buildFormCard({required List<Widget> children}) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Solid slate
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF334155), width: 1),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4)),
-        ],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
       ),
-      padding: const EdgeInsets.all(16),
-      child: child,
+      child: Column(
+        children: children,
+      ),
     );
   }
 }

@@ -6,7 +6,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(protect as any, createTicket as any)
+  .post(createTicket as any)
   .get(protect as any, getTickets as any);
 
 router

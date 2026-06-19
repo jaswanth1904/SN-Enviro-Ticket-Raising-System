@@ -55,6 +55,64 @@ class AppTheme {
           ),
         ),
       ),
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: const ColorScheme.light(
+        primary: Color(0xFF007AFF), // iOS Blue
+        secondary: Color(0xFF34C759), // iOS Green
+        surface: Colors.white,
+        background: Color(0xFFF2F2F7), // iOS Grouped Background
+        error: Color(0xFFFF3B30), // iOS Red
+        onPrimary: Colors.white,
+        onSurface: Colors.black,
+        onBackground: Colors.black,
+      ),
+      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
+      scaffoldBackgroundColor: const Color(0xFFF2F2F7), // iOS Grey Background
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Color(0xFF007AFF)),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10), // iOS style border radius
+          borderSide: const BorderSide(color: Color(0xFFE5E5EA), width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFFE5E5EA), width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
+        ),
+        labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
+        hintStyle: const TextStyle(color: Color(0xFFC7C7CC)),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF007AFF),
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 50),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.4,
+          ),
+        ),
+      ),
     );
   }
 }

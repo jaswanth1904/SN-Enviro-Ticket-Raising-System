@@ -2,12 +2,13 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { SocketProvider } from './context/SocketContext';
+import { SocketProvider, useSocket } from './context/SocketContext';
 import { PageLayout } from './components/layout/PageLayout';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Tickets } from './pages/Tickets';
 import { TicketDetail } from './pages/TicketDetail';
+import { TicketForm } from './pages/TicketForm';
 import { Users } from './pages/Users';
 import { Settings } from './pages/Settings';
 
@@ -18,17 +19,54 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <PageLayout>{children}</PageLayout>;
 };
 
+// Admin Route Wrapper
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== 'admin') return <Navigate to="/tickets/new" replace />;
+  return <PageLayout>{children}</PageLayout>;
+};
+
+const RootRedirect = () => {
+  const { user } = useAuth();
+  if (user?.role === 'field_engineer') return <Navigate to="/tickets/new" replace />;
+  return <Navigate to="/dashboard" replace />;
+};
+
 const AppRoutes = () => {
+  const { socket } = useSocket();
+
+  React.useEffect(() => {
+    if (!socket) return;
+    
+    const handleNewTicket = (newTicket: any) => {
+      // Global toast notification for admins when a new ticket arrives
+      toast.success(`New Ticket Raised: ${newTicket.ticketId} - ${newTicket.subject}`, {
+        duration: 5000,
+        icon: '🚨',
+      });
+    };
+
+    socket.on('ticket_created', handleNewTicket);
+
+    return () => {
+      socket.off('ticket_created', handleNewTicket);
+    };
+  }, [socket]);
+
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
-      <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetail /></ProtectedRoute>} />
-      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+      <Route path="/tickets/new" element={<TicketForm />} />
+      
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* Admin only routes */}
+      <Route path="/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
+      <Route path="/tickets" element={<AdminRoute><Tickets /></AdminRoute>} />
+      <Route path="/tickets/:id" element={<AdminRoute><TicketDetail /></AdminRoute>} />
+      <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
+
+      <Route path="/" element={<Navigate to="/tickets/new" replace />} />
     </Routes>
   );
 };

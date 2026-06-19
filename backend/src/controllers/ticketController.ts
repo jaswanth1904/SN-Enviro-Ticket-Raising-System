@@ -5,36 +5,60 @@ import { AuthRequest } from '../middleware/authMiddleware';
 import User from '../models/User';
 import { getIo } from '../socket';
 import { sendEmail } from '../services/emailService';
+import { emailQueue } from '../services/emailQueue';
 
 // @desc    Create a new ticket
 // @route   POST /api/v1/tickets
 // @access  Private
 export const createTicket = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { stationId, subject, description, s3ImageUrl, assignedTo } = req.body;
+    const { stationId, manualStationName, locationDetails, subject, description, s3ImageUrl, assignedTo, telemetryIssueType, fieldEngineerLocation } = req.body;
 
-    let station = await Station.findById(stationId).catch(() => null);
-    if (!station) {
-      // Look up by human-readable string (e.g., STN-260)
-      station = await Station.findOne({ stationNumber: stationId });
-      
-      // If it still doesn't exist, create a dummy station to ensure the ticket never drops
+    let station;
+    if (stationId === 'STN-999' && manualStationName) {
+      station = await Station.create({
+        stationNumber: `MNL-${Date.now().toString().slice(-4)}`,
+        industryName: `Manual: ${manualStationName}`,
+        district: locationDetails || 'Manual Entry',
+        state: 'Manual Entry',
+        deviceTypes: ['Manual Entry'],
+        coordinates: {
+          type: 'Point',
+          coordinates: [0, 0]
+        }
+      });
+    } else {
+      station = await Station.findById(stationId).catch(() => null);
       if (!station) {
-        station = await Station.create({
-          stationNumber: stationId,
-          industryName: 'Unknown Field Location',
-          location: { lat: 0, lng: 0 }
-        });
+        // Look up by human-readable string (e.g., STN-260)
+        station = await Station.findOne({ stationNumber: stationId });
+        
+        // If it still doesn't exist, create a dummy station to ensure the ticket never drops
+        if (!station) {
+          station = await Station.create({
+            stationNumber: stationId,
+            industryName: 'Unknown Field Location',
+            district: 'Unknown',
+            state: 'Unknown',
+            deviceTypes: ['Unknown'],
+            coordinates: {
+              type: 'Point',
+              coordinates: [0, 0]
+            }
+          });
+        }
       }
     }
 
     const ticket = await Ticket.create({
       stationId: station._id,
-      creatorId: req.user?._id,
+      creatorId: req.user?._id || undefined,
       assignedTo: assignedTo || null,
       subject,
       description,
       s3ImageUrl,
+      telemetryIssueType,
+      fieldEngineerLocation,
     });
 
     const populatedTicket = await Ticket.findById(ticket._id)
@@ -49,33 +73,38 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
     // If assigned immediately, send email to assignee
     if (assignedTo && populatedTicket?.assignedTo) {
       const assignee: any = populatedTicket.assignedTo;
-      try {
-        await sendEmail(
-          assignee.email,
-          `New Ticket Assigned: ${ticket.ticketId}`,
-          `<h2>New Ticket Assignment</h2><p>You have been assigned to ticket <b>${ticket.ticketId}</b>: ${subject}</p>`
-        );
-        emailSent = true;
-      } catch (emailErr) {
-        console.error('Non-fatal: Failed to send assignment email', emailErr);
-      }
+      emailQueue.push({
+        to: assignee.email,
+        subject: `New Ticket Assigned: ${ticket.ticketId}`,
+        htmlContent: `<h2>New Ticket Assignment</h2><p>You have been assigned to ticket <b>${ticket.ticketId}</b>: ${subject}</p>`
+      });
     } else {
       // Send urgent alert to the admin so they can assign it
-      try {
-        await sendEmail(
-          'admin@snenviro.com',
-          `URGENT: New Field Ticket Raised - ${ticket.ticketId}`,
-          `<h2>New Ticket Raised by Field Team</h2>
+      emailQueue.push({
+        to: 'admin@snenviro.com',
+        subject: `URGENT: New Field Ticket Raised - ${ticket.ticketId}`,
+        htmlContent: `<h2>New Ticket Raised by Field Team</h2>
            <p><b>Station:</b> ${station.stationNumber} - ${station.industryName}</p>
            <p><b>Subject:</b> ${subject}</p>
            <p><b>Description:</b> ${description}</p>
            <br/>
            <p>Please log in to the dashboard to assign a technician immediately.</p>`
-        );
-        emailSent = true;
-      } catch (emailErr) {
-        console.error('Non-fatal: Failed to send admin notification email', emailErr);
-      }
+      });
+    }
+
+    // Always send the confirmation to the creator (Field Engineer) and Plant Manager
+    const creator: any = populatedTicket?.creatorId;
+    if (creator) {
+      emailQueue.push({
+        to: creator.email, // In a real app, also include plant manager email
+        subject: `Ticket Registered: ${ticket.ticketId}`,
+        htmlContent: `<h2>Ticket Confirmation</h2>
+          <p>We have successfully registered your issue.</p>
+          <p><b>Subject:</b> ${subject}</p>
+          <p><b>Description:</b> ${description}</p>
+          <br/>
+          <p>Standard resolution windows are 24-48 business hours. Ticket ID: <b>${ticket.ticketId}</b>.</p>`
+      });
     }
 
     res.status(201).json({
@@ -179,34 +208,29 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
     // Emit Socket Event
     getIo().emit('ticket_updated', populatedTicket);
 
-    let emailSent = false;
+    let emailSent = true; // Queued asynchronously
     // Send emails based on actions
     if (assignedTo && populatedTicket?.assignedTo) {
       const assignee: any = populatedTicket.assignedTo;
-      try {
-        await sendEmail(
-          assignee.email,
-          `Ticket Assigned: ${updatedTicket.ticketId}`,
-          `<h2>Ticket Assignment Update</h2><p>You have been assigned to ticket <b>${updatedTicket.ticketId}</b>.</p>`
-        );
-        emailSent = true;
-      } catch (emailErr) {
-        console.error('Non-fatal: Failed to send assignment email', emailErr);
-      }
+      emailQueue.push({
+        to: assignee.email,
+        subject: `Ticket Assigned: ${updatedTicket.ticketId}`,
+        htmlContent: `<h2>Ticket Assignment Update</h2><p>You have been assigned to ticket <b>${updatedTicket.ticketId}</b>.</p>`
+      });
     }
 
     if (status === 'Resolved' && populatedTicket?.creatorId) {
       const creator: any = populatedTicket.creatorId;
-      try {
-        await sendEmail(
-          creator.email,
-          `Ticket Resolved: ${updatedTicket.ticketId}`,
-          `<h2>Ticket Resolved</h2><p>Ticket <b>${updatedTicket.ticketId}</b> has been marked as resolved.</p><p><b>Notes:</b> ${notes || 'No notes provided.'}</p>`
-        );
-        emailSent = true;
-      } catch (emailErr) {
-        console.error('Non-fatal: Failed to send resolution email', emailErr);
-      }
+      emailQueue.push({
+        to: creator.email,
+        subject: `Ticket Resolved: ${updatedTicket.ticketId}`,
+        htmlContent: `<h2>Ticket Resolved</h2>
+          <p>Ticket <b>${updatedTicket.ticketId}</b> has been marked as resolved.</p>
+          <br/>
+          <p>The telemetry anomaly has been successfully addressed and verified. Thank you for your patience.</p>
+          <br/>
+          <p><b>Resolution Notes:</b> ${notes || 'No notes provided.'}</p>`
+      });
     }
 
     res.json({
