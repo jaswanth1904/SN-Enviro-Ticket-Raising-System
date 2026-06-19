@@ -4,7 +4,7 @@ import { Ticket, AlertTriangle, CheckCircle, Clock, Activity } from 'lucide-reac
 import api from '../services/api';
 import { useSocket } from '../context/SocketContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export const Dashboard: React.FC = () => {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -59,19 +59,11 @@ export const Dashboard: React.FC = () => {
     return Math.max(0, Math.floor(slaTarget - hoursElapsed));
   };
 
-  // Chart Data Processing
-  const issueDistribution = tickets.reduce((acc: any, ticket) => {
-    const type = ticket.telemetryIssueType || 'General Issue';
-    acc[type] = (acc[type] || 0) + 1;
-    return acc;
-  }, {});
-
-  const pieData = Object.keys(issueDistribution).map(key => ({
-    name: key,
-    value: issueDistribution[key]
-  }));
-
-  const COLORS = ['#22d3ee', '#fbbf24', '#f87171', '#34d399', '#818cf8', '#a78bfa'];
+  const barData = [
+    { name: 'Pending', count: pendingCount, fill: '#fbbf24' },
+    { name: 'In-Progress', count: inProgressCount, fill: '#22d3ee' },
+    { name: 'Resolved', count: resolvedCount, fill: '#34d399' }
+  ];
 
   if (loading) return <div className="p-8 text-cyan-400 animate-pulse font-medium">Initializing Executive Telemetry...</div>;
 
@@ -162,31 +154,20 @@ export const Dashboard: React.FC = () => {
         </div>
         
         <div className="xl:col-span-3 bg-card/80 backdrop-blur-sm rounded-xl border border-border p-6 shadow-sm flex flex-col h-[500px]">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Anomaly Distribution</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Ticket Status Overview</h3>
           {tickets.length > 0 ? (
-            <div style={{ width: '100%', height: 350 }}>
+            <div style={{ width: '100%', height: 350, minWidth: 0, minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={80}
-                    outerRadius={120}
-                    paddingAngle={5}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
+                <BarChart data={barData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                    itemStyle={{ color: '#1f2937', fontWeight: 600 }}
+                    cursor={{ fill: '#f3f4f6' }} 
+                    contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
                   />
-                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                </PieChart>
+                  <Bar dataKey="count" radius={[6, 6, 0, 0]} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           ) : (

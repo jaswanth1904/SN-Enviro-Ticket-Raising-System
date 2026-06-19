@@ -5,7 +5,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 
 export const Settings: React.FC = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const [name, setName] = useState(user?.name || '');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +29,10 @@ export const Settings: React.FC = () => {
       toast.success('Profile updated successfully!');
       setPassword('');
       
-      // We would normally refresh the auth context here, but let's assume it succeeds
+      // Update global context so UI changes instantly
+      if (user) {
+        login({ ...user, name: payload.name || user.name });
+      }
       
     } catch (error) {
       toast.error('Failed to update profile');
@@ -46,7 +49,7 @@ export const Settings: React.FC = () => {
           <SettingsIcon className="h-6 w-6 text-blue-600" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">System Config & Profile</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Admin Account</h2>
           <p className="text-gray-500 text-sm mt-1">Update your admin credentials</p>
         </div>
       </div>

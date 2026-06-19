@@ -54,7 +54,7 @@ export default function App() {
       let s3ImageUrl = null;
       if (image) {
         await new Promise(r => setTimeout(r, 500));
-        s3ImageUrl = 'https://mock-s3-bucket.s3.amazonaws.com/fault-image.jpg';
+        s3ImageUrl = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1000'; // Real placeholder image
       }
 
       const payload = {

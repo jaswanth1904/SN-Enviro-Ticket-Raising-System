@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { ArrowLeft, MapPin, CheckCircle, Cpu, Clock, Mail, User, ArrowRight } from 'lucide-react';
+import { ArrowLeft, MapPin, CheckCircle, Cpu, Clock, Mail, User, ArrowRight, ExternalLink } from 'lucide-react';
 
 export const TicketDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -123,7 +123,19 @@ export const TicketDetail: React.FC = () => {
               {ticket.s3ImageUrl && (
                 <div>
                   <h4 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">Attached Evidence</h4>
-                  <img src={ticket.s3ImageUrl} alt="Evidence" className="max-w-full rounded-xl border border-gray-200" />
+                  {(() => {
+                    const safeImageUrl = ticket.s3ImageUrl.includes('mock-s3-bucket') 
+                      ? 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1000' 
+                      : ticket.s3ImageUrl;
+                    return (
+                      <a href={safeImageUrl} target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:opacity-90 transition-opacity group">
+                        <img src={safeImageUrl} alt="Evidence" className="max-w-full max-h-[400px] object-contain bg-gray-50 rounded-xl border border-gray-200" />
+                        <p className="text-xs text-blue-600 mt-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity font-medium">
+                          <ExternalLink className="w-3 h-3 mr-1" /> Click to view full resolution
+                        </p>
+                      </a>
+                    );
+                  })()}
                 </div>
               )}
             </div>
