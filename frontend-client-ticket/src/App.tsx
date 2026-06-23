@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Send, Hexagon, WifiOff, X, MapPin, AlertCircle, FileText, Factory, ShieldCheck, ArrowRight, CheckCircle } from 'lucide-react';
+import { Camera, Send, Hexagon, X, MapPin, AlertCircle, FileText, Factory, ShieldCheck, CheckCircle } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import api from './services/api';
 import { db } from './services/db';
@@ -9,7 +9,7 @@ export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [stations, setStations] = useState<any[]>([]);
+
   const [formData, setFormData] = useState({
     stationId: '',
     manualStationName: '',
@@ -19,7 +19,7 @@ export default function App() {
     description: '',
     contactEmail: '',
   });
-  const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [location] = useState<{ lat: number, lng: number } | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);

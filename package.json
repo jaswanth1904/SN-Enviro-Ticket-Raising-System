@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "vercel-build": "npm run build:admin && npm run build:client && npm run merge-builds",
-    "build:admin": "cd frontend && npm install && npm run build",
-    "build:client": "cd frontend-client-ticket && npm install && npm run build",
-    "merge-builds": "rm -rf dist && mkdir -p dist/client && cp -r frontend/dist/* dist/ && cp -r frontend-client-ticket/dist/* dist/client/"
+    "vercel-build": "bash build.sh"
   }
 }
