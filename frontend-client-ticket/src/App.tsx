@@ -173,7 +173,7 @@ export default function App() {
             >
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-30"></div>
-                <img src="/logo.jpeg" alt="Logo" className="relative h-16 w-16 object-cover drop-shadow-xl rounded-full border-2 border-white/50" />
+                <img src="/client/logo.jpeg" alt="Logo" className="relative h-16 w-16 object-cover drop-shadow-xl rounded-full border-2 border-white/50" />
               </div>
             </motion.div>
             <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">SN enviro Ticket System</h2>

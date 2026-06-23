@@ -5,4 +5,5 @@ import react from '@vitejs/plugin-react'
 // Triggering Vite Restart to load Tailwind CSS config
 export default defineConfig({
   plugins: [react()],
+  base: '/client/',
 })
