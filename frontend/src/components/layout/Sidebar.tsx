@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Ticket, Users, Settings, Hexagon, X } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, Settings, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
