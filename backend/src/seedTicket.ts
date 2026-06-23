@@ -17,7 +17,13 @@ const seedDummyTicket = async () => {
       station = await Station.create({
         stationNumber: 'STN-801',
         industryName: 'Test Industrial Corp',
-        location: { lat: 28.6139, lng: 77.2090 }
+        district: 'Test District',
+        state: 'Test State',
+        deviceTypes: ['Test Sensor'],
+        coordinates: {
+          type: 'Point',
+          coordinates: [77.2090, 28.6139]
+        }
       });
       console.log('Created dummy station');
     }

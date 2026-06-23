@@ -4,15 +4,14 @@ import Station from '../models/Station';
 import { AuthRequest } from '../middleware/authMiddleware';
 import User from '../models/User';
 import { getIo } from '../socket';
-import { sendEmail } from '../services/emailService';
-import { emailQueue } from '../services/emailQueue';
+import { sendRegistrationAcknowledgement, sendAssignmentNotification, sendResolutionNotice } from '../services/emailService';
 
 // @desc    Create a new ticket
 // @route   POST /api/v1/tickets
 // @access  Private
 export const createTicket = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { stationId, manualStationName, locationDetails, subject, description, s3ImageUrl, assignedTo, telemetryIssueType, fieldEngineerLocation } = req.body;
+    const { stationId, manualStationName, locationDetails, subject, description, s3ImageUrl, assignedTo, telemetryIssueType, fieldEngineerLocation, contactEmail } = req.body;
 
     let station;
     if (stationId === 'STN-999' && manualStationName) {
@@ -59,6 +58,7 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
       s3ImageUrl,
       telemetryIssueType,
       fieldEngineerLocation,
+      contactEmail,
     });
 
     const populatedTicket = await Ticket.findById(ticket._id)
@@ -67,44 +67,21 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
       .populate('assignedTo', 'name email');
 
     // Emit Socket Event
-    getIo().emit('ticket_created', populatedTicket);
+    getIo().emit('ticket:onNewTicket', populatedTicket);
 
     let emailSent = false;
     // If assigned immediately, send email to assignee
     if (assignedTo && populatedTicket?.assignedTo) {
       const assignee: any = populatedTicket.assignedTo;
-      emailQueue.push({
-        to: assignee.email,
-        subject: `New Ticket Assigned: ${ticket.ticketId}`,
-        htmlContent: `<h2>New Ticket Assignment</h2><p>You have been assigned to ticket <b>${ticket.ticketId}</b>: ${subject}</p>`
-      });
-    } else {
-      // Send urgent alert to the admin so they can assign it
-      emailQueue.push({
-        to: 'admin@snenviro.com',
-        subject: `URGENT: New Field Ticket Raised - ${ticket.ticketId}`,
-        htmlContent: `<h2>New Ticket Raised by Field Team</h2>
-           <p><b>Station:</b> ${station.stationNumber} - ${station.industryName}</p>
-           <p><b>Subject:</b> ${subject}</p>
-           <p><b>Description:</b> ${description}</p>
-           <br/>
-           <p>Please log in to the dashboard to assign a technician immediately.</p>`
-      });
+      await sendAssignmentNotification(assignee.email, ticket.ticketId, subject).catch(console.error);
+      emailSent = true;
     }
 
-    // Always send the confirmation to the creator (Field Engineer) and Plant Manager
+    // Always send the confirmation to the creator (Field Engineer) asynchronously
     const creator: any = populatedTicket?.creatorId;
-    if (creator) {
-      emailQueue.push({
-        to: creator.email, // In a real app, also include plant manager email
-        subject: `Ticket Registered: ${ticket.ticketId}`,
-        htmlContent: `<h2>Ticket Confirmation</h2>
-          <p>We have successfully registered your issue.</p>
-          <p><b>Subject:</b> ${subject}</p>
-          <p><b>Description:</b> ${description}</p>
-          <br/>
-          <p>Standard resolution windows are 24-48 business hours. Ticket ID: <b>${ticket.ticketId}</b>.</p>`
-      });
+    const recipientEmail = contactEmail || creator?.email;
+    if (recipientEmail) {
+      sendRegistrationAcknowledgement(recipientEmail, ticket.ticketId, subject, description).catch(console.error);
     }
 
     res.status(201).json({
@@ -189,7 +166,7 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
             name: assignedTo.split('@')[0],
             email: assignedTo,
             password: 'generated-password-123',
-            role: 'technician'
+            role: 'field_engineer'
           });
         }
         finalAssignedTo = userByEmail._id;
@@ -208,29 +185,19 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
     // Emit Socket Event
     getIo().emit('ticket_updated', populatedTicket);
 
-    let emailSent = true; // Queued asynchronously
-    // Send emails based on actions
+    let emailSent = true;
+    // Send emails based on actions asynchronously
     if (assignedTo && populatedTicket?.assignedTo) {
       const assignee: any = populatedTicket.assignedTo;
-      emailQueue.push({
-        to: assignee.email,
-        subject: `Ticket Assigned: ${updatedTicket.ticketId}`,
-        htmlContent: `<h2>Ticket Assignment Update</h2><p>You have been assigned to ticket <b>${updatedTicket.ticketId}</b>.</p>`
-      });
+      sendAssignmentNotification(assignee.email, updatedTicket.ticketId, updatedTicket.subject).catch(console.error);
     }
 
-    if (status === 'Resolved' && populatedTicket?.creatorId) {
-      const creator: any = populatedTicket.creatorId;
-      emailQueue.push({
-        to: creator.email,
-        subject: `Ticket Resolved: ${updatedTicket.ticketId}`,
-        htmlContent: `<h2>Ticket Resolved</h2>
-          <p>Ticket <b>${updatedTicket.ticketId}</b> has been marked as resolved.</p>
-          <br/>
-          <p>The telemetry anomaly has been successfully addressed and verified. Thank you for your patience.</p>
-          <br/>
-          <p><b>Resolution Notes:</b> ${notes || 'No notes provided.'}</p>`
-      });
+    if (status === 'Resolved') {
+      const creator: any = populatedTicket?.creatorId;
+      const recipientEmail = ticket.contactEmail || creator?.email;
+      if (recipientEmail) {
+        sendResolutionNotice(recipientEmail, updatedTicket.ticketId).catch(console.error);
+      }
     }
 
     res.json({

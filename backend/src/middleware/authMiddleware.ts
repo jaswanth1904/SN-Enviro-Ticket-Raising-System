@@ -23,10 +23,15 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
       
       req.user = user;
       next();
-    } catch (error) {
-      console.error(error);
-      res.status(401);
-      next(new Error('Not authorized, token failed'));
+    } catch (error: any) {
+      console.error('Auth middleware error:', error.message);
+      if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError' || error.name === 'NotBeforeError') {
+        res.status(401);
+        next(new Error('Not authorized, token failed'));
+      } else {
+        res.status(500);
+        next(new Error('Internal server error during authentication check'));
+      }
     }
   }
 

@@ -15,6 +15,7 @@ export interface ITicket extends Document {
     coordinates: number[];
   };
   notes?: string;
+  contactEmail?: string;
 }
 
 const ticketSchema = new Schema<ITicket>(
@@ -72,6 +73,9 @@ const ticketSchema = new Schema<ITicket>(
     notes: {
       type: String,
     },
+    contactEmail: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -105,6 +109,7 @@ ticketSchema.pre('save', async function () {
 });
 
 ticketSchema.index({ fieldEngineerLocation: '2dsphere' });
+ticketSchema.index({ status: 1, createdAt: -1 });
 
 const Ticket = mongoose.model<ITicket>('Ticket', ticketSchema);
 export default Ticket;

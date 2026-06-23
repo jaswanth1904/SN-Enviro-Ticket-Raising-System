@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { ArrowLeft, MapPin, CheckCircle, Cpu, Clock, Mail, User, ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowLeft, MapPin, CheckCircle, Cpu, Clock, Mail, User, ArrowRight, ExternalLink, X } from 'lucide-react';
 
 export const TicketDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +13,7 @@ export const TicketDetail: React.FC = () => {
   const [isResolving, setIsResolving] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState('');
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -128,12 +129,26 @@ export const TicketDetail: React.FC = () => {
                       ? 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1000' 
                       : ticket.s3ImageUrl;
                     return (
-                      <a href={safeImageUrl} target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:opacity-90 transition-opacity group">
-                        <img src={safeImageUrl} alt="Evidence" className="max-w-full max-h-[400px] object-contain bg-gray-50 rounded-xl border border-gray-200" />
-                        <p className="text-xs text-blue-600 mt-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity font-medium">
-                          <ExternalLink className="w-3 h-3 mr-1" /> Click to view full resolution
-                        </p>
-                      </a>
+                      <>
+                        <div onClick={() => setIsImageModalOpen(true)} className="block cursor-pointer hover:opacity-90 transition-opacity group">
+                          <img src={safeImageUrl} alt="Evidence" className="max-w-full max-h-[400px] object-contain bg-gray-50 rounded-xl border border-gray-200" />
+                          <p className="text-xs text-blue-600 mt-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity font-medium">
+                            <ExternalLink className="w-3 h-3 mr-1" /> Click to view full resolution
+                          </p>
+                        </div>
+                        
+                        {isImageModalOpen && (
+                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" onClick={() => setIsImageModalOpen(false)}>
+                            <button 
+                              onClick={() => setIsImageModalOpen(false)}
+                              className="absolute top-6 right-6 text-white hover:text-gray-300 bg-black/50 p-2 rounded-full transition-colors z-50"
+                            >
+                              <X className="w-8 h-8" />
+                            </button>
+                            <img src={safeImageUrl} alt="Evidence Full" className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" onClick={(e) => e.stopPropagation()} />
+                          </div>
+                        )}
+                      </>
                     );
                   })()}
                 </div>

@@ -16,7 +16,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', showTo: ['admin'] },
     { label: 'Tickets', icon: Ticket, path: '/tickets', showTo: ['admin'] },
-    { label: 'Operators', icon: Users, path: '/users', showTo: ['admin'] },
+    { label: 'Engineers & Technicians', icon: Users, path: '/users', showTo: ['admin'] },
     { label: 'Admin Account', icon: Settings, path: '/settings', showTo: ['admin', 'field_engineer'] },
   ];
 

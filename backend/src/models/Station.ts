@@ -17,7 +17,6 @@ const stationSchema = new Schema<IStation>(
     stationNumber: {
       type: String,
       required: true,
-      unique: true,
       index: true,
     },
     industryName: {
@@ -54,6 +53,7 @@ const stationSchema = new Schema<IStation>(
 );
 
 stationSchema.index({ coordinates: '2dsphere' });
+stationSchema.index({ stationNumber: 1, industryName: 1 }, { unique: true });
 
 const Station = mongoose.model<IStation>('Station', stationSchema);
 export default Station;

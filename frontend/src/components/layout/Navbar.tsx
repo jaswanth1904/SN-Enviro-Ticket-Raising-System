@@ -13,7 +13,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    const ticketSystemUrl = import.meta.env.VITE_TICKET_APP_URL || 'http://localhost:5174';
+    window.location.replace(ticketSystemUrl);
   };
 
   return (

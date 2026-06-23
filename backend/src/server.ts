@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
+// Load env vars immediately
+dotenv.config();
+
 import app from './app';
 import connectDB from './config/db';
-
-// Load env vars
-dotenv.config();
 
 // Connect to database
 connectDB();

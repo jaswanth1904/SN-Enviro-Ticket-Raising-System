@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useSocket } from '../context/SocketContext';
 import { differenceInHours } from 'date-fns';
 import { Search, Filter, Layers } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const Tickets: React.FC = () => {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -32,7 +33,7 @@ export const Tickets: React.FC = () => {
   useEffect(() => {
     if (!socket) return;
     
-    socket.on('ticket_created', (newTicket) => {
+    socket.on('ticket:onNewTicket', (newTicket) => {
       setTickets(prev => [newTicket, ...prev]);
     });
     
@@ -41,7 +42,7 @@ export const Tickets: React.FC = () => {
     });
 
     return () => {
-      socket.off('ticket_created');
+      socket.off('ticket:onNewTicket');
       socket.off('ticket_updated');
     };
   }, [socket]);
@@ -53,7 +54,7 @@ export const Tickets: React.FC = () => {
     const hoursRemaining = 48 - hoursElapsed;
 
     if (hoursRemaining < 0) {
-      return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 animate-pulse">Breached ({Math.abs(hoursRemaining)}h over)</span>;
+      return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 animate-pulse">Overdue by {Math.abs(hoursRemaining)}h</span>;
     }
     if (hoursRemaining <= 24) {
       return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">{hoursRemaining}h left</span>;
@@ -116,45 +117,51 @@ export const Tickets: React.FC = () => {
                   <th className="px-6 py-4 font-semibold">Station Target</th>
                   <th className="px-6 py-4 font-semibold">Subject</th>
                   <th className="px-6 py-4 font-semibold">Assigned Operative</th>
-                  <th className="px-6 py-4 font-semibold text-right">SLA Compliance</th>
+                  <th className="px-6 py-4 font-semibold text-right">Time Limit Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredTickets.map((ticket) => (
-                  <tr 
-                    key={ticket._id} 
-                    className="hover:bg-gray-50 transition-colors cursor-pointer group"
-                    onClick={() => navigate(`/tickets/${ticket._id}`)}
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-2.5 h-2.5 rounded-full ${getStatusDot(ticket.status)}`} />
-                        <span className="font-medium text-gray-700">{ticket.status}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-blue-600">{ticket.ticketId}</td>
-                    <td className="px-6 py-4 text-gray-900">
-                      <span className="font-medium">Stn {ticket.stationId?.stationNumber || '??'}</span>
-                      <span className="text-gray-500 ml-2 text-xs">{ticket.stationId?.industryName || 'Unknown Location'}</span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600 max-w-[250px] truncate">{ticket.subject}</td>
-                    <td className="px-6 py-4">
-                      {ticket.assignedTo?.name ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-6 h-6 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-[10px] font-bold text-blue-700">
-                            {ticket.assignedTo.name.charAt(0)}
-                          </div>
-                          <span className="text-gray-700">{ticket.assignedTo.name}</span>
+                <AnimatePresence initial={false}>
+                  {filteredTickets.map((ticket) => (
+                    <motion.tr 
+                      key={ticket._id} 
+                      initial={{ opacity: 0, y: -20, backgroundColor: '#f0fdf4' }}
+                      animate={{ opacity: 1, y: 0, backgroundColor: 'transparent' }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.4 }}
+                      className="hover:bg-gray-50 transition-colors cursor-pointer group"
+                      onClick={() => navigate(`/tickets/${ticket._id}`)}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-2.5 h-2.5 rounded-full ${getStatusDot(ticket.status)}`} />
+                          <span className="font-medium text-gray-700">{ticket.status}</span>
                         </div>
-                      ) : (
-                        <span className="text-gray-400 italic text-xs">Unassigned</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      {getSLABadge(ticket.createdAt, ticket.status)}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4 font-semibold text-blue-600">{ticket.ticketId}</td>
+                      <td className="px-6 py-4 text-gray-900">
+                        <span className="font-medium">Stn {ticket.stationId?.stationNumber || '??'}</span>
+                        <span className="text-gray-500 ml-2 text-xs">{ticket.stationId?.industryName || 'Unknown Location'}</span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-600 max-w-[250px] truncate">{ticket.subject}</td>
+                      <td className="px-6 py-4">
+                        {ticket.assignedTo?.name ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-6 h-6 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-[10px] font-bold text-blue-700">
+                              {ticket.assignedTo.name.charAt(0)}
+                            </div>
+                            <span className="text-gray-700">{ticket.assignedTo.name}</span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 italic text-xs">Unassigned</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        {getSLABadge(ticket.createdAt, ticket.status)}
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
                 {filteredTickets.length === 0 && (
                   <tr>
                     <td colSpan={6} className="text-center py-12 text-gray-500">

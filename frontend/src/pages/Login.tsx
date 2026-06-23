@@ -22,7 +22,7 @@ export const Login: React.FC = () => {
       const response = await api.post('/auth/login', { email, password });
       if (response.data.success) {
         login(response.data.data);
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
@@ -36,30 +36,30 @@ export const Login: React.FC = () => {
       <div className="w-full max-w-[1000px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
         
         {/* Left Side: Colorful Branding */}
-        <div className="md:w-1/2 bg-blue-600 p-12 text-white flex flex-col justify-between relative overflow-hidden">
+        <div className="hidden md:flex md:w-1/2 bg-blue-600 p-8 md:p-12 text-white flex-col justify-between relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-700 opacity-90 z-0"></div>
           
           {/* Decorative circles */}
           <div className="absolute top-[-10%] left-[-10%] w-64 h-64 rounded-full bg-blue-400 opacity-20 blur-3xl z-0"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-80 h-80 rounded-full bg-indigo-400 opacity-20 blur-3xl z-0"></div>
 
-          <div className="relative z-10">
-            <div className="flex items-center space-x-3 mb-12">
+          <div className="relative z-10 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start space-x-3 mb-6 md:mb-12">
               <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
-                <img src="/logo.jpeg" alt="Logo" className="h-10 w-10 object-contain drop-shadow-md rounded-full" />
+                <img src="/logo.jpeg" alt="Logo" className="h-8 w-8 md:h-10 md:w-10 object-contain drop-shadow-md rounded-full" />
               </div>
-              <span className="text-2xl font-bold tracking-wider">SN ENVIRO</span>
+              <span className="text-xl md:text-2xl font-bold tracking-wider">SN ENVIRO</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
-              Hardware <br/> Service Portal
+            <h1 className="text-2xl md:text-5xl font-extrabold mb-2 md:mb-6 leading-tight">
+              Hardware <br className="hidden md:block"/> Service Portal
             </h1>
-            <p className="text-blue-100 text-lg max-w-sm leading-relaxed">
+            <p className="text-blue-100 text-sm md:text-lg max-w-sm mx-auto md:mx-0 leading-relaxed hidden md:block">
               Log in to manage telemetry systems, track field requests, and monitor network health across all stations.
             </p>
           </div>
 
-          <div className="relative z-10 mt-12 pt-8 border-t border-blue-400/30">
+          <div className="relative z-10 mt-8 md:mt-12 pt-6 md:pt-8 border-t border-blue-400/30 hidden md:block">
             <p className="text-sm text-blue-200">
               © 2026 SN Enviro Systems. All rights reserved.
             </p>
@@ -67,7 +67,7 @@ export const Login: React.FC = () => {
         </div>
 
         {/* Right Side: Login Form */}
-        <div className="md:w-1/2 p-12 flex items-center bg-white">
+        <div className="md:w-1/2 p-8 md:p-12 flex items-center bg-white">
           <div className="w-full max-w-sm mx-auto">
             <div className="mb-10 text-center md:text-left">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>

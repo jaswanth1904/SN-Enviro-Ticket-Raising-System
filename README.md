@@ -83,10 +83,44 @@ The brain of the operation, handling all business logic, routing, and database t
 * MongoDB Instance (Local or Atlas)
 * SMTP Credentials (for Email Dispatching)
 
-🤝 Contributing
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/jaswanth1904/SN-Enviro-Ticket-Raising-System.git
+   cd SN-Enviro-Ticket-Raising-System
+   ```
+
+2. **Start the Backend Server**
+   ```bash
+   cd backend
+   npm install
+   npm run dev
+   ```
+
+3. **Start the Admin Dashboard**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+4. **Start the Field Client Portal**
+   ```bash
+   cd frontend-client-ticket
+   npm install
+   npm run dev
+   ```
+
+---
+
+## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
 
-📝 License
+## 📝 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-✨ Built and Deployed by Jaswanth ✨
+---
+<div align="center">
+  <h3>✨ Built and Deployed by Jaswanth ✨</h3>
+</div>

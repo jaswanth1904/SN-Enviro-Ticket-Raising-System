@@ -65,7 +65,7 @@ export const Dashboard: React.FC = () => {
     { name: 'Resolved', count: resolvedCount, fill: '#34d399' }
   ];
 
-  if (loading) return <div className="p-8 text-cyan-400 animate-pulse font-medium">Initializing Executive Telemetry...</div>;
+  if (loading) return <div className="p-8 text-cyan-400 animate-pulse font-medium">Initializing SN Enviro Dashboard...</div>;
 
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
@@ -74,16 +74,16 @@ export const Dashboard: React.FC = () => {
           <Activity className="h-6 w-6 text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Executive Telemetry</h2>
-          <p className="text-gray-600 text-sm mt-1">Real-time Service Requests & SLA Compliance</p>
+          <h2 className="text-2xl font-bold text-gray-900">SN Enviro Dashboard</h2>
+          <p className="text-gray-600 text-sm mt-1">Ticketing System Overview</p>
         </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { title: 'Active Anomalies', value: pendingCount + inProgressCount, icon: Ticket, color: 'text-cyan-400', bg: 'bg-cyan-500/10', borderColor: 'border-cyan-500/20', hover: 'hover:border-cyan-500/50' },
-          { title: 'Pending Triage', value: pendingCount, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10', borderColor: 'border-amber-500/20', hover: 'hover:border-amber-500/50' },
-          { title: 'Critical Outages', value: criticalCount, icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10', borderColor: 'border-red-500/20', hover: 'hover:border-red-500/50' },
+          { title: 'Active Tickets', value: pendingCount + inProgressCount, icon: Ticket, color: 'text-cyan-400', bg: 'bg-cyan-500/10', borderColor: 'border-cyan-500/20', hover: 'hover:border-cyan-500/50' },
+          { title: 'Pending Tickets', value: pendingCount, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10', borderColor: 'border-amber-500/20', hover: 'hover:border-amber-500/50' },
+          { title: 'Critical Tickets', value: criticalCount, icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10', borderColor: 'border-red-500/20', hover: 'hover:border-red-500/50' },
           { title: 'Resolved (30D)', value: resolvedCount, icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20', hover: 'hover:border-emerald-500/50' }
         ].map((stat, i) => (
           <div 
@@ -105,9 +105,9 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-7 pt-4">
-        {/* Live Event Feed & SLA Timers */}
+        {/* Live Ticket Feed */}
         <div className="xl:col-span-4 bg-card/80 backdrop-blur-sm rounded-xl border border-border p-6 shadow-sm overflow-hidden flex flex-col h-[500px]">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Live Event Feed & SLA Timers</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Live Ticket Feed</h3>
           <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
             <AnimatePresence>
               {tickets.slice(0, 20).map((ticket) => {

@@ -19,7 +19,7 @@ export const createStation = async (req: AuthRequest, res: Response, next: NextF
     const station = await Station.create({
       stationNumber,
       industryName,
-      location,
+      district: location,
       deviceTypes,
     });
 
