@@ -17,8 +17,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     if (isAuthenticated) {
-      // Connect to the backend
-      const newSocket = io('http://localhost:5000');
+      const apiPropsUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+      const socketUrl = apiPropsUrl.replace('/api/v1', '');
+      const newSocket = io(socketUrl);
       
       newSocket.on('connect', () => {
         console.log('Connected to WebSocket');
