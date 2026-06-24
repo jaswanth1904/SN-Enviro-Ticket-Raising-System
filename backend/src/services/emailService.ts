@@ -98,18 +98,15 @@ export const sendEmail = async (to: string, subject: string, htmlContent: string
 
 export const sendRegistrationAcknowledgement = async (to: string, ticketId: string, subject: string, description: string) => {
   const content = `
-    <p>Dear Valued Customer,</p>
-    <p>Thank you for reaching out to the SN Enviro Service Team. We sincerely appreciate you taking the time to report this issue. Your support ticket has been successfully received, securely logged into our system, and assigned to our dedicated technical team for review.</p>
+    <p>Dear Customer,</p>
+    <p>Thank you for contacting SN Enviro. We have successfully received your support ticket, and our team is already reviewing it.</p>
     
     <div class="info-box">
       <p><b>Ticket ID:</b> ${ticketId}</p>
       <p><b>Subject:</b> ${subject}</p>
     </div>
 
-    <p>Our team is actively investigating the details of your request and will work diligently to ensure a prompt and effective resolution. We are committed to providing you with the highest level of service.</p>
-    <p>If you have any further questions or require immediate assistance, please do not hesitate to reply directly to this email or contact the Service Manager.</p>
-    <br/>
-    <p>Thank you for your continued trust and partnership.</p>
+    <p>We will work to resolve this as quickly as possible. If you need any urgent updates, please feel free to reply to this email or reach out to the Service Manager.</p>
     <br/>
     <p>Best Regards,</p>
     <p><b class="accent-blue">Support Team</b><br/>SN Enviro</p>
@@ -119,36 +116,32 @@ export const sendRegistrationAcknowledgement = async (to: string, ticketId: stri
 
 export const sendAssignmentNotification = async (to: string, ticketId: string, subject: string) => {
   const content = `
-    <h2>Ticket Assignment Notification</h2>
     <p>Dear Engineer,</p>
-    <p>This is an automated notification to inform you that you have been assigned to a new support ticket that requires your technical expertise.</p>
+    <p>You have been assigned to a new support ticket that requires your attention. Please review the details below and log in to the portal for further actions.</p>
     
     <div class="info-box">
       <p><b>Ticket ID:</b> ${ticketId}</p>
       <p><b>Subject:</b> ${subject}</p>
     </div>
     
-    <p>Please review the issue description in the dashboard and begin your initial assessment as soon as possible. Your prompt attention to this matter is highly appreciated to ensure we deliver timely support.</p>
+    <p>If you need any additional resources or have questions, please contact the Service Manager immediately.</p>
     <br/>
-    <p class="accent-blue">If you require any additional resources or clarification regarding this ticket, please contact the Service Manager immediately.</p>
+    <p>Best Regards,</p>
+    <p><b class="accent-blue">Support Team</b><br/>SN Enviro</p>
   `;
   return sendEmail(to, `Action Required - Ticket Assigned: ${ticketId}`, content);
 };
 
 export const sendResolutionNotice = async (to: string, ticketId: string) => {
   const content = `
-    <h2>Support Ticket Resolved</h2>
-    <p>Dear Valued Customer,</p>
-    <p>We are pleased to inform you that your recent support ticket has been successfully resolved by our technical team.</p>
+    <p>Dear Customer,</p>
+    <p>We are pleased to inform you that your support ticket has been resolved successfully by our engineering team.</p>
     
     <div class="info-box">
       <p><b>Ticket ID:</b> ${ticketId}</p>
     </div>
     
-    <p>The reported issue has been thoroughly addressed, and we have taken all necessary steps to ensure your systems continue to operate smoothly. We sincerely apologize for any inconvenience this may have caused and thank you for your patience while our team worked on the solution.</p>
-    <p>If you experience any further difficulties or if the original issue persists, please reply to this email or contact the Service Manager. We are always here to help.</p>
-    <br/>
-    <p>Thank you for choosing SN Enviro.</p>
+    <p>If you face any issues or if the problem persists, please reply to this email or contact the Service Manager.</p>
     <br/>
     <p>Best Regards,</p>
     <p><b class="accent-blue">Support Team</b><br/>SN Enviro</p>
