@@ -20,6 +20,9 @@ export default function App() {
     telemetryIssueType: '',
     description: '',
     contactEmail: '',
+    remoteSoftware: 'None',
+    remoteId: '',
+    remotePassword: '',
   });
   const [location] = useState<{ lat: number, lng: number } | null>(null);
   const [image, setImage] = useState<File | null>(null);
@@ -135,7 +138,7 @@ export default function App() {
       if (!isOnline) {
         await db.offlineTickets.add({ payload, timestamp: Date.now() });
         toast.success('Connection offline. Tracking record queued securely in client memory.', { duration: 5000 });
-        setFormData({ stationId: '', manualStationName: '', locationDetails: '', subject: '', telemetryIssueType: '', description: '', contactEmail: '' });
+        setFormData({ stationId: '', manualStationName: '', locationDetails: '', subject: '', telemetryIssueType: '', description: '', contactEmail: '', remoteSoftware: 'None', remoteId: '', remotePassword: '' });
         setImage(null);
         setImagePreview(null);
         return;
@@ -243,43 +246,135 @@ export default function App() {
                 <div className="relative group">
                   <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Issue Category</label>
                   <div className="relative flex items-center">
-                    <div className="absolute left-4 text-gray-400 group-focus-within:text-primary transition-colors">
+                    <div className="absolute left-4 text-gray-400 group-focus-within:text-primary transition-colors z-10 pointer-events-none">
                       <AlertCircle className="w-5 h-5" />
                     </div>
-                    <input
+                    <select
                       required
-                      type="text"
-                      placeholder="e.g. Power Failure"
-                      className="w-full bg-gray-50/80 hover:bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-4 py-3.5 text-gray-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all outline-none placeholder:text-gray-400 font-medium text-[15px]"
+                      className="w-full bg-gray-50/80 hover:bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-10 py-3.5 text-gray-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all outline-none font-medium text-[15px] appearance-none cursor-pointer"
                       value={formData.telemetryIssueType}
-                      onChange={(e) => setFormData({ ...formData, telemetryIssueType: e.target.value })}
-                    />
+                      onChange={(e) => {
+                        const newCategory = e.target.value;
+                        const requiresSubjectSelect = ['CAAQMS', 'CEMS', 'EQMS'].includes(newCategory);
+                        setFormData({ 
+                          ...formData, 
+                          telemetryIssueType: newCategory, 
+                          subject: requiresSubjectSelect ? 'Service Issue' : '' 
+                        });
+                      }}
+                    >
+                      <option value="" disabled>Select Category</option>
+                      <option value="CAAQMS">CAAQMS</option>
+                      <option value="CEMS">CEMS</option>
+                      <option value="EQMS">EQMS</option>
+                      <option value="DATA UPLOADING ISSUE">DATA UPLOADING ISSUE</option>
+                    </select>
+                    <div className="absolute right-4 pointer-events-none text-gray-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
                   </div>
                 </div>
 
                 <div className="relative group">
                   <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Subject</label>
                   <div className="relative flex items-center">
-                    <div className="absolute left-4 text-gray-400 group-focus-within:text-primary transition-colors">
+                    <div className="absolute left-4 text-gray-400 group-focus-within:text-primary transition-colors z-10 pointer-events-none">
                       <FileText className="w-5 h-5" />
                     </div>
-                    <input
-                      required
-                      type="text"
-                      placeholder="Brief description"
-                      className="w-full bg-gray-50/80 hover:bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-4 py-3.5 text-gray-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all outline-none placeholder:text-gray-400 font-medium text-[15px]"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    />
+                    {['CAAQMS', 'CEMS', 'EQMS'].includes(formData.telemetryIssueType) ? (
+                      <>
+                        <select
+                          required
+                          className="w-full bg-gray-50/80 hover:bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-10 py-3.5 text-gray-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all outline-none font-medium text-[15px] appearance-none cursor-pointer"
+                          value={formData.subject}
+                          onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        >
+                          <option value="Service Issue">Service Issue</option>
+                          <option value="Software Issue">Software Issue</option>
+                        </select>
+                        <div className="absolute right-4 pointer-events-none text-gray-400">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                      </>
+                    ) : (
+                      <input
+                        required
+                        type="text"
+                        placeholder="e.g. Data upload failed"
+                        className="w-full bg-gray-50/80 hover:bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-4 py-3.5 text-gray-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all outline-none placeholder:text-gray-400 font-medium text-[15px]"
+                        value={formData.subject}
+                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      />
+                    )}
                   </div>
                 </div>
 
+                {/* Remote Connection Details Section */}
+                <div className="space-y-4 p-4 bg-gray-50/50 rounded-2xl border border-gray-100/80">
+                  <div className="relative group">
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Remote Connection Tool</label>
+                    <div className="relative flex items-center">
+                      <div className="absolute left-4 text-gray-400 group-focus-within:text-primary transition-colors z-10 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="4" rx="2" ry="2"/><line x1="2" x2="22" y1="20" y2="20"/><line x1="5" x2="19" y1="20" y2="20"/><line x1="12" x2="12" y1="16" y2="20"/></svg>
+                      </div>
+                      <select
+                        className="w-full bg-white hover:bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-10 py-3 text-gray-800 focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all outline-none font-medium text-[14px] appearance-none cursor-pointer"
+                        value={formData.remoteSoftware}
+                        onChange={(e) => setFormData({ ...formData, remoteSoftware: e.target.value, remoteId: '', remotePassword: '' })}
+                      >
+                        <option value="None">None / Not Applicable</option>
+                        <option value="AnyDesk">AnyDesk</option>
+                        <option value="TeamViewer">TeamViewer</option>
+                        <option value="UltraViewer">UltraViewer</option>
+                      </select>
+                      <div className="absolute right-4 pointer-events-none text-gray-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <AnimatePresence>
+                    {formData.remoteSoftware !== 'None' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="grid grid-cols-2 gap-3 overflow-hidden"
+                      >
+                        <div className="group">
+                          <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 ml-1">Remote ID / Username</label>
+                          <input
+                            required
+                            type="text"
+                            placeholder="e.g. 123 456 789"
+                            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-gray-800 text-[14px] focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all outline-none font-semibold font-mono"
+                            value={formData.remoteId}
+                            onChange={(e) => setFormData({ ...formData, remoteId: e.target.value })}
+                          />
+                        </div>
+                        <div className="group">
+                          <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 ml-1">Password</label>
+                          <input
+                            required
+                            type="text"
+                            placeholder="e.g. 9876"
+                            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-gray-800 text-[14px] focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all outline-none font-semibold font-mono"
+                            value={formData.remotePassword}
+                            onChange={(e) => setFormData({ ...formData, remotePassword: e.target.value })}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
                 <div className="relative group">
-                  <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Deep Description</label>
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Brief Description</label>
                   <textarea
                     required
                     rows={4}
-                    placeholder="Provide exact telemetry codes or physical damage details..."
+                    placeholder="Provide brief description of the issue..."
                     className="w-full bg-gray-50/80 hover:bg-gray-50 border border-gray-200 rounded-2xl p-4 text-gray-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/50 resize-none transition-all outline-none placeholder:text-gray-400 font-medium text-[15px]"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -393,7 +488,7 @@ export default function App() {
                 <button
                   onClick={() => {
                     setShowSuccessModal(false);
-                    setFormData({ stationId: '', manualStationName: '', locationDetails: '', subject: '', telemetryIssueType: '', description: '', contactEmail: '' });
+                    setFormData({ stationId: '', manualStationName: '', locationDetails: '', subject: '', telemetryIssueType: '', description: '', contactEmail: '', remoteSoftware: 'None', remoteId: '', remotePassword: '' });
                     setImage(null);
                     setImagePreview(null);
                     window.scrollTo({ top: 0, behavior: 'smooth' });

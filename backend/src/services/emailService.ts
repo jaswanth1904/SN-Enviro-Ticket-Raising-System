@@ -95,7 +95,27 @@ export const sendEmail = async (to: string, subject: string, htmlContent: string
   }
 };
 
-export const sendRegistrationAcknowledgement = async (to: string, ticketId: string, subject: string, description: string) => {
+export const sendRegistrationAcknowledgement = async (
+  to: string, 
+  ticketId: string, 
+  subject: string, 
+  description: string,
+  remoteSoftware?: string,
+  remoteId?: string,
+  remotePassword?: string
+) => {
+  let remoteBlock = '';
+  if (remoteSoftware && remoteSoftware !== 'None') {
+    remoteBlock = `
+      <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 25px 0; border: 1px solid #e2e8f0; border-left: 4px solid #10b981;">
+        <h3 style="margin-top: 0; color: #065f46; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; font-weight: 700;">Remote Access Details</h3>
+        <p style="margin: 6px 0; color: #334155; font-size: 14px;"><b>Software:</b> ${remoteSoftware}</p>
+        <p style="margin: 6px 0; color: #334155; font-size: 14px;"><b>User ID / Name:</b> ${remoteId || 'N/A'}</p>
+        <p style="margin: 6px 0; color: #334155; font-size: 14px;"><b>Password:</b> ${remotePassword || 'N/A'}</p>
+      </div>
+    `;
+  }
+
   const content = `
     <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">Dear Valued Customer,</p>
     <p>Thank you for reaching out. Your support ticket has been received and assigned to our team.</p>
@@ -104,6 +124,8 @@ export const sendRegistrationAcknowledgement = async (to: string, ticketId: stri
       <p><b>Ticket ID:</b> ${ticketId}</p>
       <p><b>Subject:</b> ${subject}</p>
     </div>
+
+    ${remoteBlock}
 
     <p>We are actively working to resolve your issue as quickly as possible. You will be notified of any updates.</p>
     <br/>
@@ -119,8 +141,23 @@ export const sendAssignmentNotification = async (
   subject: string, 
   category: string, 
   description: string, 
-  stationDetails: string
+  stationDetails: string,
+  remoteSoftware?: string,
+  remoteId?: string,
+  remotePassword?: string
 ) => {
+  let remoteBlock = '';
+  if (remoteSoftware && remoteSoftware !== 'None') {
+    remoteBlock = `
+      <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 25px 0; border: 1px solid #e2e8f0; border-left: 4px solid #10b981;">
+        <h3 style="margin-top: 0; color: #065f46; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; font-weight: 700;">Remote Access Details</h3>
+        <p style="margin: 6px 0; color: #334155; font-size: 14px;"><b>Software:</b> ${remoteSoftware}</p>
+        <p style="margin: 6px 0; color: #334155; font-size: 14px;"><b>User ID / Name:</b> ${remoteId || 'N/A'}</p>
+        <p style="margin: 6px 0; color: #334155; font-size: 14px;"><b>Password:</b> ${remotePassword || 'N/A'}</p>
+      </div>
+    `;
+  }
+
   const content = `
     <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">Dear Engineer,</p>
     <p>A new support ticket has been assigned to you for immediate resolution. Please review the complete details of the issue below.</p>
@@ -131,6 +168,8 @@ export const sendAssignmentNotification = async (
       <p><b>Category:</b> ${category}</p>
       <p><b>Plant / Station:</b> ${stationDetails}</p>
     </div>
+    
+    ${remoteBlock}
     
     <div style="background-color: #ffffff; padding: 25px; border: 1px solid #e5e7eb; border-radius: 8px; margin: 25px 0;">
       <h3 style="margin-top: 0; color: #1e3a8a; font-size: 16px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">Issue Description</h3>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { ArrowLeft, MapPin, CheckCircle, Cpu, Clock, Mail, User, ArrowRight, ExternalLink, X } from 'lucide-react';
+import { ArrowLeft, MapPin, CheckCircle, Cpu, Clock, Mail, User, ArrowRight, ExternalLink, X, AlertCircle } from 'lucide-react';
 
 export const TicketDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -109,6 +109,11 @@ export const TicketDetail: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 mt-6 text-sm text-gray-500">
               <span className="flex items-center bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100"><Cpu className="w-4 h-4 mr-2 text-gray-400" /> Station {ticket.stationId?.stationNumber}</span>
               <span className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-gray-400" /> {ticket.stationId?.industryName}</span>
+              {ticket.telemetryIssueType && (
+                <span className="flex items-center bg-blue-50/50 px-3 py-1.5 rounded-lg border border-blue-100/50 text-blue-700 font-semibold">
+                  <AlertCircle className="w-4 h-4 mr-2 text-blue-500" /> {ticket.telemetryIssueType}
+                </span>
+              )}
               <span className="flex items-center"><Clock className="w-4 h-4 mr-2 text-gray-400" /> Raised {new Date(ticket.createdAt).toLocaleString()}</span>
             </div>
           </div>
@@ -119,6 +124,29 @@ export const TicketDetail: React.FC = () => {
                 <h4 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">Issue Description</h4>
                 <p className="text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">{ticket.description}</p>
               </div>
+
+              {ticket.remoteSoftware && ticket.remoteSoftware !== 'None' && (
+                <div className="bg-emerald-50/40 border border-emerald-100 rounded-xl p-5">
+                  <h4 className="text-xs font-bold text-emerald-800 mb-3 uppercase tracking-wider flex items-center">
+                    <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
+                    Remote Access Credentials
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-white p-3 rounded-lg border border-emerald-100/50">
+                      <span className="text-[10px] font-bold text-gray-400 uppercase block tracking-wider">Software Tool</span>
+                      <span className="text-sm font-bold text-gray-800">{ticket.remoteSoftware}</span>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-emerald-100/50">
+                      <span className="text-[10px] font-bold text-gray-400 uppercase block tracking-wider">User ID / Name</span>
+                      <span className="text-sm font-mono font-bold text-gray-800 select-all">{ticket.remoteId || 'N/A'}</span>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-emerald-100/50">
+                      <span className="text-[10px] font-bold text-gray-400 uppercase block tracking-wider">Password</span>
+                      <span className="text-sm font-mono font-bold text-gray-800 select-all">{ticket.remotePassword || 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {ticket.s3ImageUrl && (
                 <div>

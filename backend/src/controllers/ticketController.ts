@@ -11,7 +11,21 @@ import { sendRegistrationAcknowledgement, sendAssignmentNotification, sendResolu
 // @access  Private
 export const createTicket = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { stationId, manualStationName, locationDetails, subject, description, s3ImageUrl, assignedTo, telemetryIssueType, fieldEngineerLocation, contactEmail } = req.body;
+    const { 
+      stationId, 
+      manualStationName, 
+      locationDetails, 
+      subject, 
+      description, 
+      s3ImageUrl, 
+      assignedTo, 
+      telemetryIssueType, 
+      fieldEngineerLocation, 
+      contactEmail,
+      remoteSoftware,
+      remoteId,
+      remotePassword
+    } = req.body;
 
     let station;
     if (stationId === 'STN-999' && manualStationName) {
@@ -57,6 +71,9 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
       description,
       s3ImageUrl,
       telemetryIssueType,
+      remoteSoftware,
+      remoteId,
+      remotePassword,
       fieldEngineerLocation,
       contactEmail,
     });
@@ -81,7 +98,10 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
         subject,
         ticket.telemetryIssueType || 'General Issue',
         ticket.description,
-        stationDetails
+        stationDetails,
+        ticket.remoteSoftware,
+        ticket.remoteId,
+        ticket.remotePassword
       ).catch(console.error);
       emailSent = true;
     }
@@ -90,7 +110,15 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
     const creator: any = populatedTicket?.creatorId;
     const recipientEmail = contactEmail || creator?.email;
     if (recipientEmail) {
-      sendRegistrationAcknowledgement(recipientEmail, ticket.ticketId, subject, description).catch(console.error);
+      sendRegistrationAcknowledgement(
+        recipientEmail, 
+        ticket.ticketId, 
+        subject, 
+        description,
+        ticket.remoteSoftware,
+        ticket.remoteId,
+        ticket.remotePassword
+      ).catch(console.error);
     }
 
     res.status(201).json({
@@ -206,7 +234,10 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
         updatedTicket.subject,
         updatedTicket.telemetryIssueType || 'General Issue',
         updatedTicket.description,
-        stationDetails
+        stationDetails,
+        updatedTicket.remoteSoftware,
+        updatedTicket.remoteId,
+        updatedTicket.remotePassword
       ).catch(console.error);
     }
 

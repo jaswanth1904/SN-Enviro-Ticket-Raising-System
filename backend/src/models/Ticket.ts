@@ -10,6 +10,9 @@ export interface ITicket extends Document {
   status: 'Pending' | 'In-Progress' | 'Resolved';
   s3ImageUrl?: string;
   telemetryIssueType?: string;
+  remoteSoftware?: string;
+  remoteId?: string;
+  remotePassword?: string;
   fieldEngineerLocation?: {
     type: 'Point';
     coordinates: number[];
@@ -60,6 +63,18 @@ const ticketSchema = new Schema<ITicket>(
     },
     telemetryIssueType: {
       type: String,
+    },
+    remoteSoftware: {
+      type: String,
+      default: 'None',
+    },
+    remoteId: {
+      type: String,
+      default: '',
+    },
+    remotePassword: {
+      type: String,
+      default: '',
     },
     fieldEngineerLocation: {
       type: {
