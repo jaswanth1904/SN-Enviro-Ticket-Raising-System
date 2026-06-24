@@ -388,7 +388,7 @@ export default function App() {
                 </div>
                 <h3 className="text-2xl font-extrabold text-gray-900 mb-2">Ticket Sent Successfully!</h3>
                 <p className="text-gray-500 font-medium text-sm mb-8 leading-relaxed">
-                  We will resolve the issue as soon as possible. Our engineering team has been notified and will contact you shortly.
+                  We will resolve the issue as soon as possible. Our engineering team has been notified.
                 </p>
                 <button
                   onClick={() => {
