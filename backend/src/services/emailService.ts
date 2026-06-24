@@ -113,17 +113,31 @@ export const sendRegistrationAcknowledgement = async (to: string, ticketId: stri
   return sendEmail(to, `Support Ticket Received: ${ticketId}`, content);
 };
 
-export const sendAssignmentNotification = async (to: string, ticketId: string, subject: string) => {
+export const sendAssignmentNotification = async (
+  to: string, 
+  ticketId: string, 
+  subject: string, 
+  category: string, 
+  description: string, 
+  stationDetails: string
+) => {
   const content = `
     <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">Dear Engineer,</p>
-    <p>A new support ticket has been received and assigned to you for resolution.</p>
+    <p>A new support ticket has been assigned to you for immediate resolution. Please review the complete details of the issue below.</p>
     
     <div class="info-box">
       <p><b>Ticket ID:</b> ${ticketId}</p>
       <p><b>Subject:</b> ${subject}</p>
+      <p><b>Category:</b> ${category}</p>
+      <p><b>Plant / Station:</b> ${stationDetails}</p>
     </div>
     
-    <p>Please log in to the portal to view the complete details and begin troubleshooting the issue.</p>
+    <div style="background-color: #ffffff; padding: 25px; border: 1px solid #e5e7eb; border-radius: 8px; margin: 25px 0;">
+      <h3 style="margin-top: 0; color: #1e3a8a; font-size: 16px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">Issue Description</h3>
+      <p style="color: #4b5563; margin: 15px 0 0 0; font-size: 14px; white-space: pre-wrap; line-height: 1.6;">${description}</p>
+    </div>
+    
+    <p>Please begin troubleshooting this issue at the plant. Once resolved, contact your Service Manager or Admin to officially close the ticket.</p>
     <br/>
     <p>Best regards,</p>
     <p><b class="accent-blue">SN Enviro Ticket System</b></p>

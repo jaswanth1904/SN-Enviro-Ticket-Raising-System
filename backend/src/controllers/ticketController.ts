@@ -70,10 +70,19 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
     getIo().emit('ticket:onNewTicket', populatedTicket);
 
     let emailSent = false;
-    // If assigned immediately, send email to assignee
     if (assignedTo && populatedTicket?.assignedTo) {
       const assignee: any = populatedTicket.assignedTo;
-      await sendAssignmentNotification(assignee.email, ticket.ticketId, subject).catch(console.error);
+      const stationData: any = populatedTicket.stationId;
+      const stationDetails = stationData ? `${stationData.stationNumber} - ${stationData.industryName}` : 'Unknown Plant';
+      
+      await sendAssignmentNotification(
+        assignee.email, 
+        ticket.ticketId, 
+        subject,
+        ticket.telemetryIssueType || 'General Issue',
+        ticket.description,
+        stationDetails
+      ).catch(console.error);
       emailSent = true;
     }
 
@@ -186,10 +195,19 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
     getIo().emit('ticket_updated', populatedTicket);
 
     let emailSent = true;
-    // Send emails based on actions asynchronously
     if (assignedTo && populatedTicket?.assignedTo) {
       const assignee: any = populatedTicket.assignedTo;
-      sendAssignmentNotification(assignee.email, updatedTicket.ticketId, updatedTicket.subject).catch(console.error);
+      const stationData: any = populatedTicket.stationId;
+      const stationDetails = stationData ? `${stationData.stationNumber} - ${stationData.industryName}` : 'Unknown Plant';
+      
+      sendAssignmentNotification(
+        assignee.email, 
+        updatedTicket.ticketId, 
+        updatedTicket.subject,
+        updatedTicket.telemetryIssueType || 'General Issue',
+        updatedTicket.description,
+        stationDetails
+      ).catch(console.error);
     }
 
     if (status === 'Resolved') {
