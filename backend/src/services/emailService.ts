@@ -56,6 +56,26 @@ const renderTemplate = (htmlContent: string) => `
 
 export const sendEmail = async (to: string, subject: string, htmlContent: string) => {
   try {
+    const isProd = process.env.NODE_ENV === 'production';
+    if (isProd) {
+      // Proxy through Vercel to bypass Render's strict SMTP firewall (Free Tier Port 465 Block)
+      const response = await fetch('https://jaswanth1904-snenviroticket.vercel.app/api/sendEmail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to,
+          subject,
+          htmlContent: renderTemplate(htmlContent),
+          smtpUser: process.env.SMTP_USER,
+          smtpPass: process.env.SMTP_PASS,
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Vercel proxy failed');
+      console.log('✅ Message sent successfully via Vercel: %s', data.messageId);
+      return data;
+    }
+
     const mailOptions = {
       from: `"SN Enviro Systems" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to,
