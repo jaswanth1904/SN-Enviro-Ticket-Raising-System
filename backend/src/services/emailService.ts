@@ -6,26 +6,15 @@ let transporter: nodemailer.Transporter | null = null;
 const getTransporter = () => {
   if (transporter) return transporter;
 
-  const isProd = process.env.NODE_ENV === 'production';
-  const transportOptions: any = isProd
-    ? {
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.SMTP_PORT || '465', 10),
-        secure: process.env.SMTP_PORT === '465' || process.env.SMTP_PORT === undefined, // true for 465, false for 587
-        // Removed pool, maxConnections, and maxMessages to prevent idle connection ECONNRESET from Gmail
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      }
-    : {
-        host: process.env.SMTP_HOST || 'smtp.ethereal.email',
-        port: parseInt(process.env.SMTP_PORT || '587', 10),
-        auth: {
-          user: process.env.SMTP_USER || 'test@ethereal.email',
-          pass: process.env.SMTP_PASS || 'password123',
-        },
-      };
+  const transportOptions: any = {
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '465', 10),
+    secure: process.env.SMTP_PORT === '465' || process.env.SMTP_PORT === undefined, // true for 465, false for 587
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  };
 
   transporter = nodemailer.createTransport(transportOptions);
   return transporter;
@@ -67,12 +56,6 @@ const renderTemplate = (htmlContent: string) => `
 
 export const sendEmail = async (to: string, subject: string, htmlContent: string) => {
   try {
-    const isProd = process.env.NODE_ENV === 'production';
-    if (!isProd) {
-      console.log(`[MOCK EMAIL] Sent to: ${to} | Subject: ${subject}`);
-      return { messageId: 'mock-id-123' };
-    }
-    
     const mailOptions = {
       from: `"SN Enviro Systems" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to,
