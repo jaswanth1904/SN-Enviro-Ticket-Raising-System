@@ -33,7 +33,7 @@ const seedDummyTicket = async () => {
     if (!user) {
       user = await User.create({
         name: 'Admin Demo',
-        email: 'admin@snenviro.com',
+        email: 'support@snenviro.in',
         password: 'password123',
         role: 'admin'
       });
