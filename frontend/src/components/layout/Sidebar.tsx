@@ -26,10 +26,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
   return (
     <aside className={cn("flex flex-col w-64 bg-card/80 backdrop-blur-xl border-r border-border h-screen fixed top-0 left-0 z-50", className)}>
       <div className="h-16 flex items-center justify-between px-6 border-b border-border">
-        <div className="flex items-center">
+        <a href="/dashboard" className="flex items-center cursor-pointer hover:opacity-80 transition-opacity">
           <img src="/logo.jpeg" alt="Logo" className="h-8 w-8 object-contain mr-2 drop-shadow-sm rounded-full" />
-          <h1 className="text-xl font-bold text-gray-900 tracking-tight">SN Enviro</h1>
-        </div>
+          <h1 className="text-xl font-bold text-gray-900 tracking-tight leading-tight">SN Enviro <br/><span className="text-sm font-semibold text-blue-600">Ticket System</span></h1>
+        </a>
         {onClose && (
           <button onClick={onClose} className="md:hidden text-gray-600 hover:text-gray-900">
             <X className="h-6 w-6" />

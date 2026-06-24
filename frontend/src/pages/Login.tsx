@@ -58,7 +58,7 @@ export const Login: React.FC = () => {
             </div>
             
             <h1 className="text-2xl md:text-5xl font-extrabold mb-2 md:mb-6 leading-tight">
-              Hardware <br className="hidden md:block"/> Service Portal
+              Ticket <br className="hidden md:block"/> System
             </h1>
             <p className="text-blue-100 text-sm md:text-lg max-w-sm mx-auto md:mx-0 leading-relaxed hidden md:block">
               Log in to manage telemetry systems, track field requests, and monitor network health across all stations.
@@ -95,7 +95,7 @@ export const Login: React.FC = () => {
                   <input
                     id="email"
                     type="email"
-                    placeholder="admin@snenviro.com"
+                    placeholder="support@snenviro.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required

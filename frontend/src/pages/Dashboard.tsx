@@ -51,12 +51,12 @@ export const Dashboard: React.FC = () => {
   const resolvedCount = tickets.filter(t => t.status === 'Resolved').length;
   const criticalCount = tickets.filter(t => t.status !== 'Resolved').length;
 
-  const getSLAHours = (ticket: any) => {
+  const getTargetHours = (ticket: any) => {
     const created = new Date(ticket.createdAt).getTime();
     const now = new Date().getTime();
     const hoursElapsed = (now - created) / (1000 * 60 * 60);
-    const slaTarget = 48; // 48 hours SLA
-    return Math.max(0, Math.floor(slaTarget - hoursElapsed));
+    const targetHours = 48; // 48 hours target
+    return Math.max(0, Math.floor(targetHours - hoursElapsed));
   };
 
   const barData = [
@@ -111,8 +111,8 @@ export const Dashboard: React.FC = () => {
           <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
             <AnimatePresence>
               {tickets.slice(0, 20).map((ticket) => {
-                const sla = getSLAHours(ticket);
-                const isCritical = sla < 12 && ticket.status !== 'Resolved';
+                const target = getTargetHours(ticket);
+                const isCritical = target < 12 && ticket.status !== 'Resolved';
                 return (
                   <motion.div
                     key={ticket._id}
@@ -134,7 +134,7 @@ export const Dashboard: React.FC = () => {
                       {ticket.status !== 'Resolved' ? (
                         <div className={`flex items-center space-x-1 ${isCritical ? 'text-red-400 animate-pulse' : 'text-amber-400'}`}>
                           <Clock className="h-4 w-4" />
-                          <span className="text-sm font-bold font-mono">{sla}h SLA</span>
+                          <span className="text-sm font-bold font-mono">{target}h Target</span>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-1 text-emerald-400">

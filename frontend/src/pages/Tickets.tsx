@@ -47,7 +47,7 @@ export const Tickets: React.FC = () => {
     };
   }, [socket]);
 
-  const getSLABadge = (createdAt: string, status: string) => {
+  const getTargetBadge = (createdAt: string, status: string) => {
     if (status === 'Resolved') return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Resolved</span>;
     
     const hoursElapsed = differenceInHours(new Date(), new Date(createdAt));
@@ -116,7 +116,7 @@ export const Tickets: React.FC = () => {
               <div className="col-span-3">Station Target</div>
               <div className="col-span-2">Subject</div>
               <div className="col-span-2">Assigned To</div>
-              <div className="col-span-1 text-right">SLA</div>
+              <div className="col-span-1 text-right">Target</div>
             </div>
 
             <div className="divide-y divide-gray-100">
@@ -131,13 +131,13 @@ export const Tickets: React.FC = () => {
                     className="group cursor-pointer hover:bg-blue-50/30 transition-colors p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:gap-4 md:items-center relative"
                     onClick={() => navigate(`/tickets/${ticket._id}`)}
                   >
-                    {/* Mobile: Top Row with Status & SLA */}
+                    {/* Mobile: Top Row with Status & Target */}
                     <div className="flex justify-between items-start md:hidden mb-3">
                       <div className="flex items-center space-x-2">
                         <div className={`w-2.5 h-2.5 rounded-full ${getStatusDot(ticket.status)} ring-4 ring-white shadow-sm`} />
                         <span className="font-semibold text-gray-800 text-sm">{ticket.status}</span>
                       </div>
-                      <div>{getSLABadge(ticket.createdAt, ticket.status)}</div>
+                      <div>{getTargetBadge(ticket.createdAt, ticket.status)}</div>
                     </div>
 
                     {/* Status Column (Desktop) */}
@@ -191,9 +191,9 @@ export const Tickets: React.FC = () => {
                       )}
                     </div>
 
-                    {/* SLA Column (Desktop) */}
+                    {/* Target Column (Desktop) */}
                     <div className="hidden md:flex justify-end col-span-1">
-                      {getSLABadge(ticket.createdAt, ticket.status)}
+                      {getTargetBadge(ticket.createdAt, ticket.status)}
                     </div>
                   </motion.div>
                 ))}

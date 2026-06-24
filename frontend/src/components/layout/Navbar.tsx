@@ -22,7 +22,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
         <Button variant="ghost" size="icon" onClick={onMenuClick}>
           <Menu className="h-6 w-6 text-foreground" />
         </Button>
-        <h1 className="text-xl font-bold ml-2 text-foreground">SN Enviro</h1>
+        <a href="/dashboard" className="flex flex-col ml-2 cursor-pointer hover:opacity-80 transition-opacity">
+          <h1 className="text-lg font-bold text-foreground leading-tight">SN Enviro</h1>
+          <span className="text-xs font-semibold text-blue-600">Ticket System</span>
+        </a>
       </div>
 
       <div className="flex items-center space-x-4 ml-auto">
