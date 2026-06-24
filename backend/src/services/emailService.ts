@@ -97,33 +97,33 @@ export const sendEmail = async (to: string, subject: string, htmlContent: string
 
 export const sendRegistrationAcknowledgement = async (to: string, ticketId: string, subject: string, description: string) => {
   const content = `
-    <div class="greeting">Hello,</div>
-    <p>Thank you for reaching out. We have successfully registered your support ticket in our system. Our engineering team has been notified and is currently reviewing your request.</p>
+    <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">Dear Valued Customer,</p>
+    <p>Thank you for reaching out. Your support ticket has been received and assigned to our team.</p>
     
     <div class="info-box">
       <p><b>Ticket ID:</b> ${ticketId}</p>
       <p><b>Subject:</b> ${subject}</p>
     </div>
 
-    <p>We are committed to resolving this for you as quickly as possible. You will receive further updates as progress is made.</p>
+    <p>We are actively working to resolve your issue as quickly as possible. You will be notified of any updates.</p>
     <br/>
     <p>Best regards,</p>
-    <p><b class="accent-blue">The SN Enviro Support Team</b></p>
+    <p><b class="accent-blue">SN Enviro Ticket System</b></p>
   `;
   return sendEmail(to, `Support Ticket Received: ${ticketId}`, content);
 };
 
 export const sendAssignmentNotification = async (to: string, ticketId: string, subject: string) => {
   const content = `
-    <div class="greeting">Hello,</div>
-    <p>A new support ticket has been assigned to you. Please log in to the portal at your earliest convenience to review the details and begin troubleshooting.</p>
+    <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">Dear Engineer,</p>
+    <p>A new support ticket has been received and assigned to you for resolution.</p>
     
     <div class="info-box">
       <p><b>Ticket ID:</b> ${ticketId}</p>
       <p><b>Subject:</b> ${subject}</p>
     </div>
     
-    <p>If you require any additional resources or assistance, please contact the Service Manager.</p>
+    <p>Please log in to the portal to view the complete details and begin troubleshooting the issue.</p>
     <br/>
     <p>Best regards,</p>
     <p><b class="accent-blue">SN Enviro Ticket System</b></p>
@@ -133,17 +133,17 @@ export const sendAssignmentNotification = async (to: string, ticketId: string, s
 
 export const sendResolutionNotice = async (to: string, ticketId: string) => {
   const content = `
-    <div class="greeting">Hello,</div>
+    <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">Dear Valued Customer,</p>
     <p>We are pleased to inform you that your support ticket has been successfully resolved by our engineering team.</p>
     
     <div class="info-box">
       <p><b>Ticket ID:</b> ${ticketId}</p>
     </div>
     
-    <p>We hope the service met your expectations. If you experience any further issues or if the problem persists, please do not hesitate to reach out to the Service Manager.</p>
+    <p>We hope the service met your expectations. If the problem persists, please contact the Service Manager.</p>
     <br/>
     <p>Best regards,</p>
-    <p><b class="accent-blue">The SN Enviro Support Team</b></p>
+    <p><b class="accent-blue">SN Enviro Ticket System</b></p>
   `;
   return sendEmail(to, `Ticket Resolved: ${ticketId}`, content);
 };
