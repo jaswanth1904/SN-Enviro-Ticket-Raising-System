@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Send, Hexagon, X, MapPin, AlertCircle, FileText, Factory, ShieldCheck, CheckCircle } from 'lucide-react';
+import { Camera, Send, Hexagon, X, MapPin, AlertCircle, FileText, Factory, ShieldCheck, CheckCircle, LogIn } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
-import api from './services/api';
-import { db } from './services/db';
+import api from '../services/api';
+import { db } from '../services/db';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export default function App() {
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -150,33 +152,29 @@ export default function App() {
     }
   };
 
-  const adminUrl = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5173';
-
   return (
     <>
       <Toaster position="top-center" />
       <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/30 relative font-sans overflow-x-hidden">
         
+        {/* Header */}
+        <header className="w-full bg-white/50 backdrop-blur-md border-b border-gray-200 py-4 px-6 flex justify-center items-center sticky top-0 z-50">
+          <div className="flex items-center space-x-3">
+             <div className="relative">
+                <img src="/logo.jpeg" alt="Logo" className="h-10 w-10 object-cover rounded-full border border-white/50 shadow-sm" />
+             </div>
+             <h1 className="text-xl font-bold text-gray-800 tracking-tight">SN enviro <span className="text-primary">Support</span></h1>
+          </div>
+        </header>
+
         {/* Background decorative blobs */}
         <div className="absolute top-[-10%] left-[-10%] w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 pointer-events-none"></div>
         <div className="absolute top-[20%] right-[-10%] w-72 h-72 bg-accent/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-72 h-72 bg-secondary/60 rounded-full mix-blend-multiply filter blur-3xl opacity-70 pointer-events-none"></div>
 
         <div className="max-w-md mx-auto w-full pb-24 pt-8 md:pt-12 px-4 relative z-10">
 
           <div className="mb-10 text-center">
-            <motion.div 
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="flex items-center justify-center mb-4"
-            >
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-30"></div>
-                <img src="/client/logo.jpeg" alt="Logo" className="relative h-16 w-16 object-cover drop-shadow-xl rounded-full border-2 border-white/50" />
-              </div>
-            </motion.div>
-            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">SN enviro Ticket System</h2>
+            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">SN Enviro Ticket Raising System</h2>
             <p className="text-gray-500 text-sm mt-3 leading-relaxed max-w-[280px] mx-auto font-medium">
               Report issues quickly to our team. Make sure all details are correct so we can fix it fast.
             </p>
@@ -361,23 +359,18 @@ export default function App() {
             </form>
           </motion.div>
 
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-8"
-          >
-            <a 
-              href={adminUrl}
-              className="flex items-center justify-center space-x-2 py-3 px-4 bg-white/30 hover:bg-white/50 backdrop-blur-md border border-white/30 rounded-xl transition-all group shadow-[0_2px_10px_rgb(0,0,0,0.02)]"
-            >
-              <ShieldCheck className="w-4 h-4 text-gray-500 group-hover:text-gray-800 transition-colors" />
-              <span className="text-xs font-bold text-gray-600 group-hover:text-gray-900 transition-colors">Admin Dashboard</span>
-            </a>
-          </motion.div>
-
           <div className="mt-8 text-center pb-8">
             <p className="text-gray-400 text-[11px] font-bold uppercase tracking-wider">Powered by SN ENVIRO</p>
+          </div>
+
+          <div className="flex justify-center mb-8">
+            <button 
+              onClick={() => navigate('/login')}
+              className="flex items-center space-x-2 px-6 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm transition-all hover:shadow hover:text-gray-900"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              <span>Admin Login</span>
+            </button>
           </div>
         </div>
         

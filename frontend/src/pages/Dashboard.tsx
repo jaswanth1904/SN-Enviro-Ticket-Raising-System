@@ -120,17 +120,17 @@ export const Dashboard: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-background/50 border border-border rounded-lg p-4 flex items-center justify-between"
+                    className="bg-background/50 border border-border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   >
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-cyan-600 font-mono text-sm">{ticket.ticketId}</span>
-                        <span className="text-gray-400 text-xs">•</span>
-                        <span className="text-gray-900 font-medium truncate max-w-[200px]">{ticket.subject}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 flex-wrap">
+                        <span className="text-cyan-600 font-mono text-sm whitespace-nowrap">{ticket.ticketId}</span>
+                        <span className="text-gray-400 text-xs hidden sm:inline">•</span>
+                        <span className="text-gray-900 font-medium truncate">{ticket.subject}</span>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">{ticket.stationId?.stationNumber || 'Unknown Station'} - {ticket.telemetryIssueType || 'General Issue'}</p>
+                      <p className="text-xs text-gray-600 mt-1 truncate">{ticket.stationId?.stationNumber || 'Unknown Station'} - {ticket.telemetryIssueType || 'General Issue'}</p>
                     </div>
-                    <div className="flex flex-col items-end">
+                    <div className="flex sm:flex-col items-center sm:items-end shrink-0 bg-gray-50/50 sm:bg-transparent p-2 sm:p-0 rounded-md">
                       {ticket.status !== 'Resolved' ? (
                         <div className={`flex items-center space-x-1 ${isCritical ? 'text-red-400 animate-pulse' : 'text-amber-400'}`}>
                           <Clock className="h-4 w-4" />

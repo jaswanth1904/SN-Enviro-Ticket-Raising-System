@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,22 @@ interface PageLayoutProps {
 
 export const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Back Button Trap
+  React.useEffect(() => {
+    // Push an initial state
+    window.history.pushState(null, '', window.location.href);
+    
+    const handlePopState = (event: PopStateEvent) => {
+      // Force the browser forward to the dashboard using React Router
+      navigate('/dashboard', { replace: true });
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [navigate]);
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden">

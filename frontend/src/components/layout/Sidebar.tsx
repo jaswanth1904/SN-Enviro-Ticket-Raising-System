@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Ticket, Users, Settings, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
@@ -12,6 +12,8 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
   const { user } = useAuth();
+  const [hoveredPath, setHoveredPath] = React.useState<string | null>(null);
+  const location = useLocation();
   
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', showTo: ['admin'] },
@@ -41,29 +43,52 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
             key={item.path}
             to={item.path}
             onClick={onClose}
+            onMouseEnter={() => setHoveredPath(item.path)}
+            onMouseLeave={() => setHoveredPath(null)}
             className={({ isActive }) =>
               cn(
-                "group relative flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                "group relative flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors z-10",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  ? "text-primary"
+                  : "text-gray-600 hover:text-gray-900"
               )
             }
           >
-            {({ isActive }) => (
-              <>
-                {isActive && (
-                  <motion.div 
-                    layoutId="activeTab"
-                    className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <item.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-700")} />
-                <span>{item.label}</span>
-              </>
-            )}
+            {({ isActive }) => {
+              const isHovered = hoveredPath === item.path;
+              return (
+                <>
+                  {isActive && (
+                    <motion.div 
+                      layoutId="activeTab"
+                      className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full z-20"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                  {isActive && (
+                    <motion.div 
+                      layoutId="activeBackground"
+                      className="absolute inset-0 bg-primary/10 rounded-lg -z-10"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                  {isHovered && !isActive && (
+                    <motion.div 
+                      layoutId="hoverBackground"
+                      className="absolute inset-0 bg-gray-100/80 rounded-lg -z-10"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    />
+                  )}
+                  <item.icon className={cn("h-5 w-5 z-20 transition-colors", isActive ? "text-primary" : "text-gray-500 group-hover:text-primary")} />
+                  <span className="z-20">{item.label}</span>
+                </>
+              );
+            }}
           </NavLink>
         ))}
       </nav>

@@ -10,6 +10,16 @@ import { Tickets } from './pages/Tickets';
 import { TicketDetail } from './pages/TicketDetail';
 import { Users } from './pages/Users';
 import { Settings } from './pages/Settings';
+import ClientPortal from './pages/ClientPortal';
+
+// Dedicated Logout Handler Component
+const LogoutRoute = () => {
+  const { logout } = useAuth();
+  React.useEffect(() => {
+    logout();
+  }, [logout]);
+  return <Navigate to="/" replace />;
+};
 
 // Protected Route Wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,7 +39,7 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const RootRedirect = () => {
   const { isAuthenticated } = useAuth();
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
-  return <Navigate to="/login" replace />;
+  return <ClientPortal />;
 };
 
 const AppRoutes = () => {
@@ -56,6 +66,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/logout" element={<LogoutRoute />} />
       
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       {/* Admin only routes */}

@@ -36,30 +36,30 @@ const renderTemplate = (htmlContent: string) => `
   <html>
   <head>
     <style>
-      body { font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0B0F19; margin: 0; padding: 0; color: #ffffff; }
-      .email-container { max-width: 600px; margin: 40px auto; background-color: #111827; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #1f2937; }
-      .header { background-color: #0B0F19; border-bottom: 1px solid #22d3ee; padding: 30px; text-align: center; color: #ffffff; }
-      .header h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #22d3ee; }
-      .content { padding: 40px; color: #e2e8f0; line-height: 1.6; font-size: 16px; }
-      .content h2 { color: #ffffff; margin-top: 0; font-size: 20px; border-bottom: 1px solid #1f2937; padding-bottom: 10px; }
-      .footer { background-color: #0B0F19; padding: 20px; text-align: center; color: #94a3b8; font-size: 13px; border-top: 1px solid #1f2937; }
-      .button { display: inline-block; padding: 12px 24px; background-color: #22d3ee; color: #0B0F19 !important; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 20px; }
-      .accent-amber { color: #f59e0b; }
-      .accent-emerald { color: #10b981; }
+      body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333333; }
+      .email-container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
+      .header { background-color: #ffffff; border-bottom: 2px solid #2563eb; padding: 25px; text-align: center; color: #1e40af; }
+      .header h1 { margin: 0; font-size: 22px; font-weight: 700; color: #1e3a8a; }
+      .content { padding: 35px; color: #4b5563; line-height: 1.6; font-size: 15px; }
+      .content h2 { color: #1f2937; margin-top: 0; font-size: 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; }
+      .footer { background-color: #f9fafb; padding: 20px; text-align: center; color: #6b7280; font-size: 12px; border-top: 1px solid #e5e7eb; }
+      .info-box { background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #16a34a; }
+      .info-box p { margin: 5px 0; color: #166534; }
+      .accent-blue { color: #2563eb; font-weight: 600; }
     </style>
   </head>
   <body>
     <div class="email-container">
       <div class="header">
-        <img src="cid:companylogo" alt="SN Enviro Systems Logo" style="max-height: 80px; margin-bottom: 15px; border-radius: 4px;" />
-        <h1>SN ENVIRO SYSTEMS</h1>
+        <img src="cid:companylogo" alt="SN Enviro Logo" style="max-height: 60px; margin-bottom: 10px;" />
+        <h1>SN Enviro</h1>
       </div>
       <div class="content">
         ${htmlContent}
       </div>
       <div class="footer">
-        <p>This is an automated notification from the SN Enviro Ticket Management System.</p>
-        <p>© 2026 SN Enviro Systems. All rights reserved.</p>
+        <p>This is an automated notification from SN Enviro.</p>
+        <p>© 2026 SN Enviro. All rights reserved.</p>
       </div>
     </div>
   </body>
@@ -99,41 +99,59 @@ export const sendEmail = async (to: string, subject: string, htmlContent: string
 export const sendRegistrationAcknowledgement = async (to: string, ticketId: string, subject: string, description: string) => {
   const content = `
     <p>Dear Valued Customer,</p>
-    <p>Thank you for contacting us. Your support ticket has been successfully received and assigned to our team for review.</p>
+    <p>Thank you for reaching out to the SN Enviro Service Team. We sincerely appreciate you taking the time to report this issue. Your support ticket has been successfully received, securely logged into our system, and assigned to our dedicated technical team for review.</p>
     
-    <div style="background-color: #1f2937; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #f59e0b;">
-      <p style="margin: 0 0 10px 0;"><b>Ticket ID:</b> <span class="accent-amber">${ticketId}</span></p>
-      <p style="margin: 0;"><b>Subject:</b> ${subject}</p>
+    <div class="info-box">
+      <p><b>Ticket ID:</b> ${ticketId}</p>
+      <p><b>Subject:</b> ${subject}</p>
     </div>
 
-    <p>We are currently investigating the issue and will work to resolve it as soon as possible. Please allow us approximately 24–48 business hours to complete our assessment and provide an update or resolution.</p>
-    <p>We appreciate your patience and understanding. If you have any additional information related to this request, please feel free to reply to this email.</p>
+    <p>Our team is actively investigating the details of your request and will work diligently to ensure a prompt and effective resolution. We are committed to providing you with the highest level of service.</p>
+    <p>If you have any further questions or require immediate assistance, please do not hesitate to reply directly to this email or contact the Service Manager.</p>
     <br/>
-    <p>Kind Regards,</p>
-    <p><b class="accent-emerald">Support Team</b><br/>SN Enviro Systems</p>
+    <p>Thank you for your continued trust and partnership.</p>
+    <br/>
+    <p>Best Regards,</p>
+    <p><b class="accent-blue">Support Team</b><br/>SN Enviro</p>
   `;
   return sendEmail(to, `Support Ticket Received: ${ticketId}`, content);
 };
 
 export const sendAssignmentNotification = async (to: string, ticketId: string, subject: string) => {
   const content = `
-    <h2>New Ticket Assignment</h2>
-    <p>You have been instantly assigned to a new telemetry or hardware fault ticket.</p>
-    <p><b>Ticket ID:</b> <span class="accent-emerald">${ticketId}</span></p>
-    <p><b>Subject:</b> ${subject}</p>
+    <h2>Ticket Assignment Notification</h2>
+    <p>Dear Engineer,</p>
+    <p>This is an automated notification to inform you that you have been assigned to a new support ticket that requires your technical expertise.</p>
+    
+    <div class="info-box">
+      <p><b>Ticket ID:</b> ${ticketId}</p>
+      <p><b>Subject:</b> ${subject}</p>
+    </div>
+    
+    <p>Please review the issue description in the dashboard and begin your initial assessment as soon as possible. Your prompt attention to this matter is highly appreciated to ensure we deliver timely support.</p>
     <br/>
-    <p>Please click the button below to deep link to the station profile and begin triage.</p>
-    <a href="${process.env.DASHBOARD_URL || 'http://localhost:5173'}/tickets" class="button">Access Telemetry Dashboard</a>
+    <p class="accent-blue">If you require any additional resources or clarification regarding this ticket, please contact the Service Manager immediately.</p>
   `;
   return sendEmail(to, `Action Required - Ticket Assigned: ${ticketId}`, content);
 };
 
 export const sendResolutionNotice = async (to: string, ticketId: string) => {
   const content = `
-    <h2>Ticket Resolved</h2>
-    <p>Ticket <b>${ticketId}</b> has been successfully resolved.</p>
+    <h2>Support Ticket Resolved</h2>
+    <p>Dear Valued Customer,</p>
+    <p>We are pleased to inform you that your recent support ticket has been successfully resolved by our technical team.</p>
+    
+    <div class="info-box">
+      <p><b>Ticket ID:</b> ${ticketId}</p>
+    </div>
+    
+    <p>The reported issue has been thoroughly addressed, and we have taken all necessary steps to ensure your systems continue to operate smoothly. We sincerely apologize for any inconvenience this may have caused and thank you for your patience while our team worked on the solution.</p>
+    <p>If you experience any further difficulties or if the original issue persists, please reply to this email or contact the Service Manager. We are always here to help.</p>
     <br/>
-    <p class="accent-emerald" style="font-weight: 600;">The telemetry anomaly has been successfully addressed and verified. Thank you for your patience and partnership.</p>
+    <p>Thank you for choosing SN Enviro.</p>
+    <br/>
+    <p>Best Regards,</p>
+    <p><b class="accent-blue">Support Team</b><br/>SN Enviro</p>
   `;
   return sendEmail(to, `Ticket Resolved: ${ticketId}`, content);
 };

@@ -79,7 +79,14 @@ export const TicketDetail: React.FC = () => {
       }
       
       // Refresh ticket state
-      setTicket((prev: any) => ({ ...prev, assignedTo: { name: users.find(u => u._id === selectedUser)?.name } }));
+      setTicket((prev: any) => ({ 
+        ...prev, 
+        assignedTo: { 
+          email: selectedUser,
+          name: selectedUser.split('@')[0]
+        } 
+      }));
+      setSelectedUser('');
     } catch (error) {
       toast.error('Error assigning ticket');
     }

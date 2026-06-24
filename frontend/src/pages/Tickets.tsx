@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useSocket } from '../context/SocketContext';
-import { differenceInHours } from 'date-fns';
-import { Search, Filter, Layers } from 'lucide-react';
+import { differenceInHours, format } from 'date-fns';
+import { Search, Filter, Layers, Calendar, Clock as ClockIcon, User as UserIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Tickets: React.FC = () => {
@@ -108,69 +108,107 @@ export const Tickets: React.FC = () => {
         {loading ? (
           <div className="p-12 text-center text-blue-600 animate-pulse font-medium">Loading Tickets...</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 font-semibold">Status</th>
-                  <th className="px-6 py-4 font-semibold">Ticket ID</th>
-                  <th className="px-6 py-4 font-semibold">Station Target</th>
-                  <th className="px-6 py-4 font-semibold">Subject</th>
-                  <th className="px-6 py-4 font-semibold">Assigned Operative</th>
-                  <th className="px-6 py-4 font-semibold text-right">Time Limit Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                <AnimatePresence initial={false}>
-                  {filteredTickets.map((ticket) => (
-                    <motion.tr 
-                      key={ticket._id} 
-                      initial={{ opacity: 0, y: -20, backgroundColor: '#f0fdf4' }}
-                      animate={{ opacity: 1, y: 0, backgroundColor: 'transparent' }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.4 }}
-                      className="hover:bg-gray-50 transition-colors cursor-pointer group"
-                      onClick={() => navigate(`/tickets/${ticket._id}`)}
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-2.5 h-2.5 rounded-full ${getStatusDot(ticket.status)}`} />
-                          <span className="font-medium text-gray-700">{ticket.status}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-semibold text-blue-600">{ticket.ticketId}</td>
-                      <td className="px-6 py-4 text-gray-900">
-                        <span className="font-medium">Stn {ticket.stationId?.stationNumber || '??'}</span>
-                        <span className="text-gray-500 ml-2 text-xs">{ticket.stationId?.industryName || 'Unknown Location'}</span>
-                      </td>
-                      <td className="px-6 py-4 text-gray-600 max-w-[250px] truncate">{ticket.subject}</td>
-                      <td className="px-6 py-4">
-                        {ticket.assignedTo?.name ? (
-                          <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-[10px] font-bold text-blue-700">
-                              {ticket.assignedTo.name.charAt(0)}
-                            </div>
-                            <span className="text-gray-700">{ticket.assignedTo.name}</span>
+          <div className="w-full">
+            {/* Desktop Table Header - Hidden on Mobile */}
+            <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 bg-gray-50/50 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              <div className="col-span-2">Status</div>
+              <div className="col-span-2">Ticket ID & Time</div>
+              <div className="col-span-3">Station Target</div>
+              <div className="col-span-2">Subject</div>
+              <div className="col-span-2">Assigned To</div>
+              <div className="col-span-1 text-right">SLA</div>
+            </div>
+
+            <div className="divide-y divide-gray-100">
+              <AnimatePresence initial={false}>
+                {filteredTickets.map((ticket) => (
+                  <motion.div 
+                    key={ticket._id} 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    className="group cursor-pointer hover:bg-blue-50/30 transition-colors p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:gap-4 md:items-center relative"
+                    onClick={() => navigate(`/tickets/${ticket._id}`)}
+                  >
+                    {/* Mobile: Top Row with Status & SLA */}
+                    <div className="flex justify-between items-start md:hidden mb-3">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2.5 h-2.5 rounded-full ${getStatusDot(ticket.status)} ring-4 ring-white shadow-sm`} />
+                        <span className="font-semibold text-gray-800 text-sm">{ticket.status}</span>
+                      </div>
+                      <div>{getSLABadge(ticket.createdAt, ticket.status)}</div>
+                    </div>
+
+                    {/* Status Column (Desktop) */}
+                    <div className="hidden md:flex items-center space-x-3 col-span-2">
+                      <div className={`w-2.5 h-2.5 rounded-full ${getStatusDot(ticket.status)} ring-4 ring-white shadow-sm`} />
+                      <span className="font-semibold text-gray-800 text-sm">{ticket.status}</span>
+                    </div>
+
+                    {/* Ticket ID & Time Column */}
+                    <div className="col-span-2 flex flex-col mb-3 md:mb-0">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-bold text-blue-600 font-mono tracking-tight text-lg md:text-base">{ticket.ticketId}</span>
+                      </div>
+                      <div className="flex items-center text-xs text-gray-500 mt-1 space-x-2">
+                        <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" /> {format(new Date(ticket.createdAt), 'MMM d, yyyy')}</span>
+                        <span className="flex items-center text-gray-400"><ClockIcon className="w-3 h-3 mr-1" /> {format(new Date(ticket.createdAt), 'HH:mm')}</span>
+                      </div>
+                    </div>
+
+                    {/* Station Target Column */}
+                    <div className="col-span-3 mb-3 md:mb-0 flex flex-col">
+                      <span className="font-semibold text-gray-900 text-sm">
+                        Stn {ticket.stationId?.stationNumber || '??'}
+                      </span>
+                      <span className="text-gray-500 text-xs mt-0.5 max-w-[200px] truncate">
+                        {ticket.stationId?.industryName?.replace('Manual: ', '') || 'Unknown Location'}
+                      </span>
+                    </div>
+
+                    {/* Subject Column */}
+                    <div className="col-span-2 mb-4 md:mb-0">
+                      <p className="text-sm text-gray-700 font-medium line-clamp-2 md:line-clamp-1 leading-snug">
+                        {ticket.subject}
+                      </p>
+                    </div>
+
+                    {/* Assigned To Column */}
+                    <div className="col-span-2 flex items-center mb-1 md:mb-0">
+                      {ticket.assignedTo?.name ? (
+                        <div className="flex items-center space-x-2 bg-gray-50 md:bg-transparent px-3 py-1.5 md:p-0 rounded-lg">
+                          <div className="w-7 h-7 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-[11px] font-bold text-blue-700 shadow-sm">
+                            {ticket.assignedTo.name.charAt(0)}
                           </div>
-                        ) : (
-                          <span className="text-gray-400 italic text-xs">Unassigned</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        {getSLABadge(ticket.createdAt, ticket.status)}
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
-                {filteredTickets.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="text-center py-12 text-gray-500">
-                      No matching records found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                          <span className="text-sm font-medium text-gray-800">{ticket.assignedTo.name}</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-1.5 text-gray-400 bg-gray-50 md:bg-transparent px-3 py-1.5 md:p-0 rounded-lg">
+                          <UserIcon className="w-4 h-4" />
+                          <span className="text-xs font-semibold italic">Unassigned</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* SLA Column (Desktop) */}
+                    <div className="hidden md:flex justify-end col-span-1">
+                      {getSLABadge(ticket.createdAt, ticket.status)}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              
+              {filteredTickets.length === 0 && (
+                <div className="text-center py-16 px-4">
+                  <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">No tickets found</h3>
+                  <p className="text-gray-500 mt-1 max-w-sm mx-auto">We couldn't find any tickets matching your search or filters.</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
