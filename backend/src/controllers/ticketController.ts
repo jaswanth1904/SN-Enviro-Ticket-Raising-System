@@ -81,7 +81,8 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
     const populatedTicket = await Ticket.findById(ticket._id)
       .populate('stationId', 'stationNumber industryName location')
       .populate('creatorId', 'name email')
-      .populate('assignedTo', 'name email');
+      .populate('assignedTo', 'name email')
+      .lean();
 
     // Emit Socket Event
     getIo().emit('ticket:onNewTicket', populatedTicket);
@@ -149,7 +150,8 @@ export const getTickets = async (req: AuthRequest, res: Response, next: NextFunc
       .populate('stationId', 'stationNumber industryName location')
       .populate('creatorId', 'name email role')
       .populate('assignedTo', 'name email role')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.json({
       success: true,
@@ -217,7 +219,8 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
     const populatedTicket = await Ticket.findById(updatedTicket._id)
       .populate('stationId', 'stationNumber industryName location')
       .populate('creatorId', 'name email')
-      .populate('assignedTo', 'name email');
+      .populate('assignedTo', 'name email')
+      .lean();
 
     // Emit Socket Event
     getIo().emit('ticket_updated', populatedTicket);

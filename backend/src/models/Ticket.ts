@@ -125,6 +125,8 @@ ticketSchema.pre('save', async function () {
 
 ticketSchema.index({ fieldEngineerLocation: '2dsphere' });
 ticketSchema.index({ status: 1, createdAt: -1 });
+ticketSchema.index({ creatorId: 1 });
+ticketSchema.index({ assignedTo: 1 });
 
 const Ticket = mongoose.model<ITicket>('Ticket', ticketSchema);
 export default Ticket;
