@@ -39,7 +39,7 @@ const renderTemplate = (htmlContent: string) => `
       body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333333; }
       .email-container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
       .header { background-color: #ffffff; border-bottom: 2px solid #2563eb; padding: 25px; text-align: center; color: #1e40af; }
-      .header h1 { margin: 0; font-size: 22px; font-weight: 700; color: #1e3a8a; }
+      .header h1 { margin: 0; font-size: 24px; font-weight: 700; color: #1e3a8a; }
       .content { padding: 35px; color: #4b5563; line-height: 1.6; font-size: 15px; }
       .content h2 { color: #1f2937; margin-top: 0; font-size: 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; }
       .footer { background-color: #f9fafb; padding: 20px; text-align: center; color: #6b7280; font-size: 12px; border-top: 1px solid #e5e7eb; }
@@ -51,8 +51,7 @@ const renderTemplate = (htmlContent: string) => `
   <body>
     <div class="email-container">
       <div class="header">
-        <img src="cid:companylogo" alt="SN Enviro Logo" style="max-height: 60px; margin-bottom: 10px;" />
-        <h1>SN Enviro</h1>
+        <h1>SN Enviro Systems</h1>
       </div>
       <div class="content">
         ${htmlContent}
@@ -78,14 +77,7 @@ export const sendEmail = async (to: string, subject: string, htmlContent: string
       from: `"SN Enviro Systems" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to,
       subject,
-      html: renderTemplate(htmlContent),
-      attachments: [
-        {
-          filename: 'logo.jpeg',
-          path: path.join(__dirname, '../../../frontend/public/logo.jpeg'),
-          cid: 'companylogo'
-        }
-      ]
+      html: renderTemplate(htmlContent)
     };
     const info = await getTransporter().sendMail(mailOptions);
     console.log('✅ Message sent successfully: %s', info.messageId);
