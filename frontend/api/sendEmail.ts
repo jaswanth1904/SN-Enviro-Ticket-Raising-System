@@ -38,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const info = await transporter.sendMail({
-      from: `"SN Enviro Systems" <${smtpUser}>`,
+      from: `"SN Enviro Ticket System" <${smtpUser}>`,
       to,
       subject,
       html: htmlContent,
