@@ -11,7 +11,6 @@ export const TicketDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [closingNotes, setClosingNotes] = useState('');
   const [isResolving, setIsResolving] = useState(false);
-  const [users, setUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState('');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
@@ -29,13 +28,6 @@ export const TicketDetail: React.FC = () => {
         setLoading(false);
       }
     };
-    
-    // In a real app we'd fetch users from an API endpoint
-    // For this UI, we'll just mock it or fetch if endpoint exists
-    setUsers([
-      { _id: 'tech1', name: 'Field Eng. Rajesh' },
-      { _id: 'tech2', name: 'Field Eng. Sarah' }
-    ]);
     
     fetchTicket();
   }, [id]);

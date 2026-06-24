@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Send, Hexagon, X, MapPin, AlertCircle, FileText, Factory, ShieldCheck, CheckCircle, LogIn } from 'lucide-react';
+import { Camera, Send, Hexagon, X, MapPin, AlertCircle, FileText, Factory, CheckCircle, LogIn } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import api from '../services/api';
 import { db } from '../services/db';

@@ -8,7 +8,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const navigate = useNavigate();
 

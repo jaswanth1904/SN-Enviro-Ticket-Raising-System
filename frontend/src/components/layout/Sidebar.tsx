@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Ticket, Users, Settings, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
@@ -13,7 +13,6 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
   const { user } = useAuth();
   const [hoveredPath, setHoveredPath] = React.useState<string | null>(null);
-  const location = useLocation();
   
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', showTo: ['admin'] },
