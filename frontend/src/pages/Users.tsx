@@ -1,7 +1,7 @@
 import React from 'react';
 import { Users as UsersIcon, Mail, Briefcase, MapPin, Copy, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { groupedEngineers, Engineer } from '../lib/engineers';
+import { groupedEngineers, type Engineer } from '../lib/engineers';
 
 export const Users: React.FC = () => {
   const handleCopyEmail = (email: string) => {
