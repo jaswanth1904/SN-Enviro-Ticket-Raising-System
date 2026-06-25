@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { ArrowLeft, MapPin, CheckCircle, Cpu, Clock, Mail, User, ArrowRight, ExternalLink, X, AlertCircle } from 'lucide-react';
+import { engineersData } from '../lib/engineers';
 
 export const TicketDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +13,7 @@ export const TicketDetail: React.FC = () => {
   const [closingNotes, setClosingNotes] = useState('');
   const [isResolving, setIsResolving] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   useEffect(() => {
@@ -61,6 +63,9 @@ export const TicketDetail: React.FC = () => {
       toast.error('Please select a technician');
       return;
     }
+    
+    // In case the user clicked an autocomplete name but it hasn't filled yet, 
+    // or if they type a valid email. 
     try {
       const response = await api.patch(`/tickets/${id}`, { assignedTo: selectedUser });
       
@@ -83,6 +88,11 @@ export const TicketDetail: React.FC = () => {
       toast.error('Error assigning ticket');
     }
   };
+
+  const filteredEngineers = engineersData.filter(e => 
+    e.name.toLowerCase().includes(selectedUser.toLowerCase()) || 
+    e.email.toLowerCase().includes(selectedUser.toLowerCase())
+  );
 
   if (loading) return <div className="p-8 text-blue-600 font-medium animate-pulse">Loading Ticket Details...</div>;
   if (!ticket) return <div className="p-8 text-red-500 font-medium">Ticket not found.</div>;
@@ -196,7 +206,7 @@ export const TicketDetail: React.FC = () => {
             
             <div className="space-y-4">
               {/* Redesigned Assign Technician UI */}
-              <div className="bg-white rounded-xl border border-blue-100 shadow-sm overflow-hidden mb-6">
+              <div className="bg-white rounded-xl border border-blue-100 shadow-sm overflow-visible mb-6">
                 <div className="bg-blue-50/50 p-4 border-b border-blue-100 flex items-center space-x-3">
                   <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
                     <User className="w-5 h-5" />
@@ -213,16 +223,43 @@ export const TicketDetail: React.FC = () => {
                         <Mail className="h-4 w-4 text-gray-400" />
                       </div>
                       <input 
-                        type="email"
+                        type="text"
                         className="w-full bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                        placeholder="e.g. technician@gmail.com"
+                        placeholder="Search name or email..."
                         value={selectedUser}
-                        onChange={(e) => setSelectedUser(e.target.value)}
+                        onChange={(e) => {
+                          setSelectedUser(e.target.value);
+                          setShowDropdown(true);
+                        }}
+                        onFocus={() => setShowDropdown(true)}
+                        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                       />
+                      
+                      {/* Autocomplete Dropdown */}
+                      {showDropdown && selectedUser && filteredEngineers.length > 0 && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto left-0 top-full">
+                          {filteredEngineers.map((engineer, idx) => (
+                            <div 
+                              key={idx}
+                              className="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
+                              onClick={() => {
+                                setSelectedUser(engineer.email);
+                                setShowDropdown(false);
+                              }}
+                            >
+                              <div className="font-bold text-sm text-gray-900">{engineer.name}</div>
+                              <div className="text-xs text-gray-500 mt-0.5 flex flex-col">
+                                <span className="text-blue-600">{engineer.email}</span>
+                                <span>{engineer.region}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <button 
                       onClick={handleAssign} 
-                      disabled={!selectedUser}
+                      disabled={!selectedUser || !selectedUser.includes('@')}
                       className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-bold tracking-wide transition-all shadow-sm flex items-center justify-center whitespace-nowrap"
                     >
                       Forward Email
