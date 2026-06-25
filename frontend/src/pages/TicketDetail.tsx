@@ -280,42 +280,26 @@ export const TicketDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* NEW: Full Width Resolution Log at the bottom */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 sm:p-10 shadow-sm mt-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 pb-6 mb-8 gap-4">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600 shadow-sm">
-              <CheckCircle className="h-7 w-7" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-extrabold text-gray-900 tracking-tight">Resolution Log</h3>
-              <p className="text-sm text-gray-500 mt-1 font-medium">Final closure details and automated email trigger</p>
-            </div>
+      {/* NEW: Simple Resolution Action at the bottom */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm mt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="flex items-center space-x-4">
+          <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600 shadow-sm shrink-0">
+            <CheckCircle className="h-7 w-7" />
+          </div>
+          <div>
+            <h3 className="text-xl font-extrabold text-gray-900 tracking-tight">Close & Resolve</h3>
+            <p className="text-sm text-gray-500 mt-1 font-medium">This will resolve the ticket and automatically notify stakeholders.</p>
           </div>
         </div>
         
-        <div className="space-y-6 max-w-4xl">
-          <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-            <label className="text-[13px] font-bold text-gray-700 uppercase tracking-wider block mb-3">Resolution Summary</label>
-            <textarea
-              className="w-full h-48 bg-white border border-gray-200 rounded-xl text-[15px] text-gray-900 p-5 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 resize-none transition-all shadow-sm"
-              placeholder="Enter comprehensive final closure notes here. This summary will be securely emailed to all stakeholders upon resolution."
-              value={closingNotes}
-              onChange={(e) => setClosingNotes(e.target.value)}
-            />
-          </div>
-          
-          <div className="flex justify-end pt-2">
-            <button 
-              onClick={handleResolve}
-              disabled={isResolving || ticket.status === 'Resolved'}
-              className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[16px] font-bold tracking-wide shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[250px]"
-            >
-              <CheckCircle className="h-6 w-6 mr-3" />
-              {isResolving ? 'Resolving Ticket...' : 'Resolve Ticket & Trigger Email'}
-            </button>
-          </div>
-        </div>
+        <button 
+          onClick={handleResolve}
+          disabled={isResolving || ticket.status === 'Resolved'}
+          className="w-full sm:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[15px] font-bold tracking-wide shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
+        >
+          <CheckCircle className="h-5 w-5 mr-2" />
+          {isResolving ? 'Resolving...' : 'Resolve & Trigger Email'}
+        </button>
       </div>
     </div>
   );
