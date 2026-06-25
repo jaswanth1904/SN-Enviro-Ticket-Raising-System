@@ -6,6 +6,8 @@ export interface Engineer {
 }
 
 export const engineersData: Engineer[] = [
+  { name: 'KANCHERLA MURALIKRISHNA', email: 'muralikancherla7032@gmail.com', region: 'Chattisgarh, Madhya Pradesh', designation: 'Embedded Engineer' },
+  { name: 'Usharani Gade', email: 'gadeusharani6@gmail.com', region: 'South (Karnataka, Kerala, Telangana, AP, Tamil Nadu)', designation: 'Embedded Engineer' },
   { name: 'Vangara Bhavana', email: 'vangarabhavana.resume@gmail.com', region: 'North-East (Rajasthan, West Bengal, Assam, Meghalaya)', designation: 'Embedded Engineer' },
   { name: 'Vinayak Nath', email: 'vinayaknath16@gmail.com', region: 'North-East (Assam, Meghalaya)', designation: 'Field Application Engineer' },
   { name: 'Pittu Narendra Reddy', email: 'reddynarendra211@gmail.com', region: 'Central (Indore)', designation: 'Field Application Engineer' },
