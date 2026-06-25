@@ -175,13 +175,13 @@ export const Tickets: React.FC = () => {
                     </div>
 
                     {/* Assigned To Column */}
-                    <div className="col-span-2 flex items-center mb-1 md:mb-0">
+                    <div className="col-span-2 flex items-center mb-1 md:mb-0 min-w-0 pr-2">
                       {ticket.assignedTo?.name ? (
-                        <div className="flex items-center space-x-2 bg-gray-50 md:bg-transparent px-3 py-1.5 md:p-0 rounded-lg">
-                          <div className="w-7 h-7 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-[11px] font-bold text-blue-700 shadow-sm">
+                        <div className="flex items-center space-x-2 bg-gray-50 md:bg-transparent px-3 py-1.5 md:p-0 rounded-lg min-w-0 w-full">
+                          <div className="w-7 h-7 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-[11px] font-bold text-blue-700 shadow-sm shrink-0">
                             {ticket.assignedTo.name.charAt(0)}
                           </div>
-                          <span className="text-sm font-medium text-gray-800">{ticket.assignedTo.name}</span>
+                          <span className="text-sm font-medium text-gray-800 truncate" title={ticket.assignedTo.name}>{ticket.assignedTo.name}</span>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-1.5 text-gray-400 bg-gray-50 md:bg-transparent px-3 py-1.5 md:p-0 rounded-lg">

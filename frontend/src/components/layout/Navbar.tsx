@@ -1,4 +1,4 @@
-import { Menu, UserCircle, LogOut, Sun, Moon } from 'lucide-react';
+import { Menu, UserCircle, LogOut } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -14,17 +14,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const navigate = useNavigate();
 
   const [time, setTime] = useState(new Date());
-  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-
-  const toggleTheme = () => {
-    document.documentElement.classList.toggle('dark');
-    setIsDark(!isDark);
-  };
 
   const handleLogout = () => {
     navigate('/logout', { replace: true });
@@ -49,10 +43,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             {time.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
           </span>
         </div>
-
-        <Button variant="ghost" size="icon" onClick={toggleTheme} className="mr-2 text-yellow-500 hover:bg-yellow-50 dark:text-blue-400 dark:hover:bg-blue-900/20">
-          {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-        </Button>
 
         <div className="flex items-center space-x-3">
           <div className="hidden sm:flex flex-col text-right">
