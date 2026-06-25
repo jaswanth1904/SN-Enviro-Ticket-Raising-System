@@ -20,7 +20,8 @@ export const engineersData: Engineer[] = [
   { name: 'Jyothi Boppudi', email: 'jyothiboppudi08@gmail.com', region: 'North (Delhi, NCR, Haryana, Punjab)', designation: 'Embedded Engineer' },
   { name: 'N Rajesh', email: 'nethalarajesh17@gmail.com', region: 'East', designation: 'Field Application Engineer' },
   { name: 'Tasmin Shaik', email: 'shaiktasmin802@gmail.com', region: 'West (Maharashtra, Gujarat, Goa)', designation: 'Embedded Engineer' },
-  { name: 'Teja poodari', email: 'tejapoodari@gmail.com', region: 'South', designation: 'Field Application Engineer' }
+  { name: 'Teja poodari', email: 'tejapoodari@gmail.com', region: 'South', designation: 'Field Application Engineer' },
+  { name: 'N L N Vachaspathi', email: 'vachaspathi.2434@gmail.com', region: 'South2 (Bangalore)', designation: 'Field Application Engineer' }
 ];
 
 // Helper function to group engineers by broad region categories for display
