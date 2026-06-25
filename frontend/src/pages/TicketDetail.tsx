@@ -196,7 +196,7 @@ export const TicketDetail: React.FC = () => {
 
         {/* Right Column: Actions */}
         <div className="w-full lg:w-[400px] space-y-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
             <div className="flex items-center space-x-3 border-b border-gray-100 pb-4 mb-6">
               <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                 <Mail className="h-5 w-5" />
@@ -206,7 +206,7 @@ export const TicketDetail: React.FC = () => {
             
             <div className="space-y-4">
               {/* Redesigned Assign Technician UI */}
-              <div className="bg-white rounded-xl border border-blue-100 shadow-sm overflow-visible mb-6">
+              <div className="bg-white rounded-xl border border-blue-100 shadow-sm overflow-visible mb-8">
                 <div className="bg-blue-50/50 p-4 border-b border-blue-100 flex items-center space-x-3">
                   <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
                     <User className="w-5 h-5" />
@@ -216,7 +216,7 @@ export const TicketDetail: React.FC = () => {
                     <p className="text-xs text-gray-500 mt-0.5">Automated HTML email dispatch</p>
                   </div>
                 </div>
-                <div className="p-5">
+                <div className="p-6">
                   <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                     <div className="relative flex-1">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -237,21 +237,18 @@ export const TicketDetail: React.FC = () => {
                       
                       {/* Autocomplete Dropdown */}
                       {showDropdown && selectedUser && filteredEngineers.length > 0 && (
-                        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto left-0 top-full">
+                        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto overflow-x-hidden left-0 top-full">
                           {filteredEngineers.map((engineer, idx) => (
                             <div 
                               key={idx}
-                              className="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
+                              className="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors flex items-center"
                               onClick={() => {
                                 setSelectedUser(engineer.email);
                                 setShowDropdown(false);
                               }}
                             >
-                              <div className="font-bold text-sm text-gray-900">{engineer.name}</div>
-                              <div className="text-xs text-gray-500 mt-0.5 flex flex-col">
-                                <span className="text-blue-600">{engineer.email}</span>
-                                <span>{engineer.region}</span>
-                              </div>
+                              <Mail className="w-4 h-4 text-gray-400 mr-2 shrink-0" />
+                              <span className="text-sm text-gray-700 font-medium truncate">{engineer.email}</span>
                             </div>
                           ))}
                         </div>
