@@ -106,12 +106,12 @@ export const TicketDetail: React.FC = () => {
         <div className="flex-1 space-y-6">
           <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
             <div className="flex items-center space-x-4 mb-4">
-              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{ticket.ticketId}</h2>
+              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{ticket.subject}</h2>
               <span className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wide rounded-full ${ticket.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
                 {ticket.status}
               </span>
             </div>
-            <h3 className="text-xl text-gray-800 font-semibold">{ticket.subject}</h3>
+            <h3 className="text-xl text-gray-500 font-mono font-semibold">#{ticket.ticketId}</h3>
             
             <div className="flex flex-wrap items-center gap-4 mt-6 text-sm text-gray-500 font-medium">
               <span className="flex items-center bg-gray-50 px-3.5 py-2 rounded-lg border border-gray-100"><Cpu className="w-4.5 h-4.5 mr-2.5 text-gray-400" /> Station {ticket.stationId?.stationNumber}</span>

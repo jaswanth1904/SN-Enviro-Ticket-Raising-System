@@ -120,7 +120,8 @@ export const Dashboard: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-background/50 border border-border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    onClick={() => navigate(`/tickets/${ticket._id}`)}
+                    className="bg-background/50 border border-border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 flex-wrap">
