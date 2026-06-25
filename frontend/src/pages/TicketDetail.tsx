@@ -265,11 +265,11 @@ export const TicketDetail: React.FC = () => {
                   </div>
                   
                   {ticket.assignedTo && (
-                    <div className="mt-5 flex items-center p-4 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm">
+                    <div className="mt-5 flex items-center p-4 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm min-w-0">
                       <CheckCircle className="w-5 h-5 text-emerald-600 mr-3 shrink-0" />
-                      <p className="text-[13px] text-emerald-900 leading-tight">
+                      <p className="text-[13px] text-emerald-900 leading-tight min-w-0 flex-1">
                         Currently assigned to <br/>
-                        <span className="font-extrabold text-[14px] mt-0.5 block">{ticket.assignedTo.email || ticket.assignedTo.name}</span>
+                        <span className="font-extrabold text-[14px] mt-0.5 block truncate" title={ticket.assignedTo.email || ticket.assignedTo.name}>{ticket.assignedTo.email || ticket.assignedTo.name}</span>
                       </p>
                     </div>
                   )}

@@ -32,20 +32,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
 
   return (
     <header className="h-16 bg-card/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-4 lg:px-8 w-full sticky top-0 z-40 shadow-sm transition-colors duration-300">
-      <div className="flex items-center md:hidden">
-        <Button variant="ghost" size="icon" onClick={onMenuClick}>
+      <div className="flex items-center md:hidden min-w-0 flex-1">
+        <Button variant="ghost" size="icon" onClick={onMenuClick} className="mr-1 shrink-0">
           <Menu className="h-6 w-6 text-foreground" />
         </Button>
-        <a href="/dashboard" className="flex flex-col ml-2 cursor-pointer hover:opacity-80 transition-opacity">
-          <h1 className="text-lg font-bold text-foreground leading-tight">SN Enviro</h1>
-          <span className="text-xs font-semibold text-blue-600">Ticket System</span>
+        <a href="/dashboard" className="flex flex-col cursor-pointer hover:opacity-80 transition-opacity truncate">
+          <h1 className="text-base sm:text-lg font-extrabold text-foreground leading-tight truncate tracking-tight">SN Enviro</h1>
+          <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 truncate uppercase tracking-widest">Ticket System</span>
         </a>
       </div>
 
       <div className="flex items-center space-x-4 ml-auto">
-        <div className="hidden md:flex flex-col items-end mr-4 bg-gray-50/50 dark:bg-gray-800/50 px-4 py-1.5 rounded-xl border border-gray-100 dark:border-gray-700">
-          <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">SN Enviro Melody Live</span>
-          <span className="text-[15px] font-mono font-bold text-gray-900 dark:text-gray-100">
+        <div className="hidden md:flex items-center mr-2 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mr-2 hidden lg:inline-block">SN Enviro Live</span>
+          <span className="text-[13px] font-mono font-bold text-blue-600 dark:text-blue-400">
             {time.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
           </span>
         </div>
