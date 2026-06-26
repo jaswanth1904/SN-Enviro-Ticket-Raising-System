@@ -248,7 +248,7 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
       const creator: any = populatedTicket?.creatorId;
       const recipientEmail = ticket.contactEmail || creator?.email;
       
-      const created = new Date(ticket.createdAt).getTime();
+      const created = new Date((ticket as any).createdAt).getTime();
       const now = new Date().getTime();
       const diffMs = now - created;
       const hours = Math.floor(diffMs / (1000 * 60 * 60));
