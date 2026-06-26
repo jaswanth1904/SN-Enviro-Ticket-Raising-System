@@ -184,13 +184,19 @@ export const sendAssignmentNotification = async (
   return sendEmail(to, `Action Required: Ticket Assigned (${ticketId})`, content);
 };
 
-export const sendResolutionNotice = async (to: string, ticketId: string) => {
+export const sendResolutionNotice = async (to: string, ticketId: string, resolutionTimeStr?: string) => {
+  let resolutionTimeHtml = '';
+  if (resolutionTimeStr) {
+    resolutionTimeHtml = `<p><b>Resolution Time:</b> ${resolutionTimeStr}</p>`;
+  }
+
   const content = `
     <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">Dear Valued Customer,</p>
     <p>We are pleased to inform you that your support ticket has been successfully resolved by our engineering team.</p>
     
     <div class="info-box">
       <p><b>Ticket ID:</b> ${ticketId}</p>
+      ${resolutionTimeHtml}
     </div>
     
     <p>We hope the service met your expectations. If the problem persists, please contact the Service Manager.</p>

@@ -75,7 +75,7 @@ export const Dashboard: React.FC = () => {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">SN Enviro Dashboard</h2>
-          <p className="text-gray-600 text-sm mt-1">Ticketing System Overview</p>
+          <p className="text-gray-600 text-sm mt-1 italic">"Efficiency is doing things right; effectiveness is doing the right things."</p>
         </div>
       </div>
 

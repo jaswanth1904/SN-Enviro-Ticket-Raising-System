@@ -247,8 +247,21 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
     if (status === 'Resolved') {
       const creator: any = populatedTicket?.creatorId;
       const recipientEmail = ticket.contactEmail || creator?.email;
+      
+      const created = new Date(ticket.createdAt).getTime();
+      const now = new Date().getTime();
+      const diffMs = now - created;
+      const hours = Math.floor(diffMs / (1000 * 60 * 60));
+      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      let resolutionTimeStr = '';
+      if (hours > 0) {
+        resolutionTimeStr = `${hours} hour(s) and ${minutes} minute(s)`;
+      } else {
+        resolutionTimeStr = `${minutes} minute(s)`;
+      }
+
       if (recipientEmail) {
-        sendResolutionNotice(recipientEmail, updatedTicket.ticketId).catch(console.error);
+        sendResolutionNotice(recipientEmail, updatedTicket.ticketId, resolutionTimeStr).catch(console.error);
       }
     }
 
