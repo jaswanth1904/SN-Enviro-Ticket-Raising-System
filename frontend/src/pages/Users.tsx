@@ -90,6 +90,53 @@ export const Users: React.FC = () => {
         </div>
       </div>
 
+      {/* Leadership Section */}
+      <div className="space-y-6 pt-2">
+        <div className="flex items-center space-x-3 border-b border-gray-200 pb-3">
+          <div className="p-2 bg-purple-100 rounded-lg">
+            <Briefcase className="w-6 h-6 text-purple-700" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900">Leadership & Management</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 pt-2">
+          {[
+            { name: 'David', role: 'MD of Company', email: 'david@snenviro.com', color: 'from-purple-600 to-indigo-600' },
+            { name: 'Ramesh', role: 'Head of Service', email: 'ramesh@snenviro.com', color: 'from-blue-600 to-cyan-600' },
+            { name: 'Nagaraju P', role: 'Service Manager', email: 'nagarajup@snenviro.com', color: 'from-emerald-600 to-teal-600' },
+            { name: 'Sales', role: 'Admin and Accounts', email: 'sales@snenvio.com', color: 'from-amber-500 to-orange-600' },
+          ].map((leader, idx) => (
+            <div key={idx} className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-300 transition-all duration-300 overflow-hidden group">
+              <div className="p-6">
+                <div className="flex items-start space-x-4 w-full mb-4">
+                  <div className={`h-14 w-14 rounded-full bg-gradient-to-br ${leader.color} flex items-center justify-center text-white font-bold text-xl shadow-md shrink-0`}>
+                    {leader.name.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0 mt-1">
+                    <h3 className="font-bold text-gray-900 text-[16px] leading-tight break-words">{leader.name}</h3>
+                    <div className="text-purple-600 text-[13px] font-bold mt-1">
+                      {leader.role}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center text-[13px] text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-100 group-hover:bg-purple-50 transition-colors mt-4">
+                  <Mail className="w-4.5 h-4.5 text-purple-600 mr-3 shrink-0" />
+                  <span className="font-semibold text-gray-800 truncate flex-1 mr-2" title={leader.email}>{leader.email}</span>
+                  <button 
+                    onClick={() => handleCopyEmail(leader.email)}
+                    className="p-2 text-purple-600 hover:text-white bg-purple-100 hover:bg-purple-600 rounded-lg transition-colors shrink-0 shadow-sm"
+                    title="Copy Email"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Embedded Engineers Section (Top) */}
       {embeddedEngineers.length > 0 && (
         <div className="space-y-6 pt-2">
