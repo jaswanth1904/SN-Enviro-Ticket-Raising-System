@@ -115,7 +115,7 @@ export const Alerts: React.FC = () => {
 
                 <div className="ml-6 flex flex-col space-y-3">
                   <button
-                    onClick={() => navigate(`/tickets/${ticket.ticketId}`)}
+                    onClick={() => navigate(`/tickets/${ticket._id}`)}
                     className="flex items-center justify-center px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
                   >
                     Review Ticket
