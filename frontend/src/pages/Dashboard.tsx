@@ -48,6 +48,7 @@ export const Dashboard: React.FC = () => {
 
   const pendingCount = tickets.filter(t => t.status === 'Pending').length;
   const inProgressCount = tickets.filter(t => t.status === 'In-Progress').length;
+  const pendingReviewCount = tickets.filter(t => t.status === 'Pending Review').length;
   const resolvedCount = tickets.filter(t => t.status === 'Resolved').length;
   const criticalCount = tickets.filter(t => t.status !== 'Resolved').length;
 
@@ -62,6 +63,7 @@ export const Dashboard: React.FC = () => {
   const barData = [
     { name: 'Pending', count: pendingCount, fill: '#fbbf24' },
     { name: 'In-Progress', count: inProgressCount, fill: '#22d3ee' },
+    { name: 'Reviewing', count: pendingReviewCount, fill: '#f87171' },
     { name: 'Resolved', count: resolvedCount, fill: '#34d399' }
   ];
 

@@ -16,8 +16,17 @@ export const Alerts: React.FC = () => {
     try {
       const response = await api.get('/tickets');
       if (response.data.success) {
-        // Filter only pending review tickets
-        setTickets(response.data.data.filter((t: any) => t.status === 'Pending Review'));
+        // Filter pending review tickets and tickets that were resolved by an engineer (have notes)
+        const alerts = response.data.data.filter((t: any) => 
+          t.status === 'Pending Review' || (t.status === 'Resolved' && t.notes)
+        );
+        // Sort pending review first, then by updated date
+        alerts.sort((a: any, b: any) => {
+          if (a.status === 'Pending Review' && b.status !== 'Pending Review') return -1;
+          if (a.status !== 'Pending Review' && b.status === 'Pending Review') return 1;
+          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+        });
+        setTickets(alerts);
       }
     } catch (error) {
       console.error('Failed to fetch tickets', error);
@@ -34,15 +43,26 @@ export const Alerts: React.FC = () => {
     if (!socket) return;
     
     socket.on('ticket_updated', (updatedTicket) => {
-      if (updatedTicket.status === 'Pending Review') {
+      if (updatedTicket.status === 'Pending Review' || (updatedTicket.status === 'Resolved' && updatedTicket.notes)) {
         setTickets(prev => {
           const exists = prev.find(t => t._id === updatedTicket._id);
-          if (exists) return prev.map(t => t._id === updatedTicket._id ? updatedTicket : t);
-          return [updatedTicket, ...prev];
+          let newTickets = exists 
+            ? prev.map(t => t._id === updatedTicket._id ? updatedTicket : t)
+            : [updatedTicket, ...prev];
+            
+          // Sort again to keep pending review at the top
+          return newTickets.sort((a: any, b: any) => {
+            if (a.status === 'Pending Review' && b.status !== 'Pending Review') return -1;
+            if (a.status !== 'Pending Review' && b.status === 'Pending Review') return 1;
+            return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+          });
         });
-        toast.success(`New Alert: Engineer resolved ticket ${updatedTicket.ticketId}`);
+        
+        if (updatedTicket.status === 'Pending Review') {
+          toast.success(`New Alert: Engineer resolved ticket ${updatedTicket.ticketId}`);
+        }
       } else {
-        // If status changed to something else (e.g. Resolved), remove it from alerts
+        // Remove if it's no longer an alert (e.g. status changed to something else and not resolved with notes)
         setTickets(prev => prev.filter(t => t._id !== updatedTicket._id));
       }
     });
@@ -78,15 +98,17 @@ export const Alerts: React.FC = () => {
         </div>
       ) : (
         <div className="grid gap-4">
-          {tickets.map((ticket) => (
-            <div key={ticket._id} className="bg-white rounded-xl border border-red-200 shadow-sm hover:shadow-md transition-shadow p-6 relative overflow-hidden group">
-              <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+          {tickets.map((ticket) => {
+            const isPending = ticket.status === 'Pending Review';
+            return (
+            <div key={ticket._id} className={`bg-white rounded-xl border ${isPending ? 'border-red-200' : 'border-emerald-200'} shadow-sm hover:shadow-md transition-shadow p-6 relative overflow-hidden group`}>
+              <div className={`absolute top-0 left-0 w-1 h-full ${isPending ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
               
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <span className="text-sm font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full">
-                      Needs Review
+                    <span className={`text-sm font-bold px-3 py-1 rounded-full ${isPending ? 'text-red-600 bg-red-50' : 'text-emerald-600 bg-emerald-50'}`}>
+                      {isPending ? 'Needs Review' : 'Resolved'}
                     </span>
                     <span className="text-sm text-gray-500 font-medium">
                       {ticket.ticketId}
@@ -116,15 +138,15 @@ export const Alerts: React.FC = () => {
                 <div className="ml-6 flex flex-col space-y-3">
                   <button
                     onClick={() => navigate(`/tickets/${ticket._id}`)}
-                    className="flex items-center justify-center px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                    className={`flex items-center justify-center px-6 py-2.5 text-white rounded-lg transition-colors font-medium shadow-sm ${isPending ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'}`}
                   >
-                    Review Ticket
+                    {isPending ? 'Review Ticket' : 'View Ticket'}
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </button>
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       )}
     </div>
