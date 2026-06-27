@@ -7,7 +7,8 @@ export interface ITicket extends Document {
   assignedTo?: mongoose.Types.ObjectId;
   subject: string;
   description: string;
-  status: 'Pending' | 'In-Progress' | 'Resolved';
+  status: 'Pending' | 'In-Progress' | 'Pending Review' | 'Resolved';
+  resolutionToken?: string;
   s3ImageUrl?: string;
   telemetryIssueType?: string;
   remoteSoftware?: string;
@@ -54,8 +55,13 @@ const ticketSchema = new Schema<ITicket>(
     },
     status: {
       type: String,
-      enum: ['Pending', 'In-Progress', 'Resolved'],
+      enum: ['Pending', 'In-Progress', 'Pending Review', 'Resolved'],
       default: 'Pending',
+    },
+    resolutionToken: {
+      type: String,
+      default: null,
+      select: false, // Don't return it in default queries for security
     },
     s3ImageUrl: {
       type: String,

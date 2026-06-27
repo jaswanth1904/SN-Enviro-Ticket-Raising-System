@@ -281,24 +281,30 @@ export const TicketDetail: React.FC = () => {
       </div>
 
       {/* NEW: Simple Resolution Action at the bottom */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm mt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className={`rounded-2xl border p-6 sm:p-8 shadow-sm mt-8 flex flex-col sm:flex-row items-center justify-between gap-6 ${ticket.status === 'Pending Review' ? 'bg-red-50 border-red-200' : 'bg-white border-gray-200'}`}>
         <div className="flex items-center space-x-4">
-          <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600 shadow-sm shrink-0">
-            <CheckCircle className="h-7 w-7" />
+          <div className={`p-3 rounded-xl shadow-sm shrink-0 ${ticket.status === 'Pending Review' ? 'bg-red-100 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
+            {ticket.status === 'Pending Review' ? <AlertCircle className="h-7 w-7" /> : <CheckCircle className="h-7 w-7" />}
           </div>
           <div>
-            <h3 className="text-xl font-extrabold text-gray-900 tracking-tight">Close & Resolve</h3>
-            <p className="text-sm text-gray-500 mt-1 font-medium">This will resolve the ticket and automatically notify stakeholders.</p>
+            <h3 className={`text-xl font-extrabold tracking-tight ${ticket.status === 'Pending Review' ? 'text-red-900' : 'text-gray-900'}`}>
+              {ticket.status === 'Pending Review' ? 'Approve & Resolve Ticket' : 'Close & Resolve'}
+            </h3>
+            <p className={`text-sm mt-1 font-medium ${ticket.status === 'Pending Review' ? 'text-red-700' : 'text-gray-500'}`}>
+              {ticket.status === 'Pending Review' 
+                ? 'The engineer marked this as fixed. Review their notes and click approve to finalize and notify the client.' 
+                : 'This will resolve the ticket and automatically notify stakeholders.'}
+            </p>
           </div>
         </div>
         
         <button 
           onClick={handleResolve}
           disabled={isResolving || ticket.status === 'Resolved'}
-          className="w-full sm:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[15px] font-bold tracking-wide shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
+          className={`w-full sm:w-auto px-8 py-3.5 text-white rounded-xl text-[15px] font-bold tracking-wide shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shrink-0 ${ticket.status === 'Pending Review' ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'}`}
         >
           <CheckCircle className="h-5 w-5 mr-2" />
-          {isResolving ? 'Resolving...' : 'Resolve & Trigger Email'}
+          {isResolving ? 'Resolving...' : (ticket.status === 'Pending Review' ? 'Approve & Resolve' : 'Resolve & Trigger Email')}
         </button>
       </div>
     </div>

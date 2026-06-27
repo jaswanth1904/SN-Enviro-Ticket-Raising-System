@@ -144,7 +144,8 @@ export const sendAssignmentNotification = async (
   stationDetails: string,
   remoteSoftware?: string,
   remoteId?: string,
-  remotePassword?: string
+  remotePassword?: string,
+  resolutionToken?: string
 ) => {
   let remoteBlock = '';
   if (remoteSoftware && remoteSoftware !== 'None') {
@@ -176,7 +177,14 @@ export const sendAssignmentNotification = async (
       <p style="color: #4b5563; margin: 15px 0 0 0; font-size: 14px; white-space: pre-wrap; line-height: 1.6;">${description}</p>
     </div>
     
-    <p>Please begin troubleshooting this issue at the plant. Once resolved, contact your Service Manager or Admin to officially close the ticket.</p>
+    <p>Please begin troubleshooting this issue at the plant. Once you have fixed the issue, click the secure button below to notify the Admin.</p>
+    
+    ${resolutionToken ? `
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="https://snenvirotickets.in/resolve/${ticketId}?token=${resolutionToken}" style="background-color: #2563eb; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; display: inline-block;">Mark Ticket as Fixed</a>
+    </div>
+    ` : ''}
+
     <br/>
     <p>Best regards,</p>
     <p><b class="accent-blue">SN Enviro Ticket System</b></p>

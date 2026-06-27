@@ -1,4 +1,5 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
 import Ticket from '../models/Ticket';
 import Station from '../models/Station';
 import { AuthRequest } from '../middleware/authMiddleware';
@@ -212,6 +213,11 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
       }
       
       ticket.assignedTo = finalAssignedTo;
+      
+      // Generate a magic link token if not exists
+      if (!ticket.resolutionToken) {
+        ticket.resolutionToken = crypto.randomBytes(16).toString('hex');
+      }
     }
 
     const updatedTicket = await ticket.save();
@@ -240,7 +246,8 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
         stationDetails,
         updatedTicket.remoteSoftware,
         updatedTicket.remoteId,
-        updatedTicket.remotePassword
+        updatedTicket.remotePassword,
+        updatedTicket.resolutionToken
       ).catch(console.error);
     }
 
@@ -268,6 +275,52 @@ export const updateTicket = async (req: AuthRequest, res: Response, next: NextFu
     res.json({
       success: true,
       emailSent,
+      data: updatedTicket,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Magic link resolution for engineers
+// @route   PATCH /api/v1/tickets/:ticketId/magic-resolve
+// @access  Public
+export const magicResolve = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { token, notes } = req.body;
+    
+    // Find ticket by ticketId (e.g. SN-2026-1001) and ensure token matches
+    // We explicitly select the resolutionToken since it's select: false in schema
+    const ticket = await Ticket.findOne({ ticketId: req.params.id, resolutionToken: token }).select('+resolutionToken');
+    
+    if (!ticket) {
+      res.status(403);
+      return next(new Error('Invalid token or ticket not found'));
+    }
+
+    ticket.status = 'Pending Review';
+    if (notes) {
+      ticket.notes = ticket.notes ? `${ticket.notes}\n\n[Engineer Resolution Note]: ${notes}` : `[Engineer Resolution Note]: ${notes}`;
+    } else {
+      ticket.notes = ticket.notes ? `${ticket.notes}\n\n[Engineer marked as fixed without notes]` : `[Engineer marked as fixed without notes]`;
+    }
+    
+    // Clear the token so it can't be reused
+    ticket.resolutionToken = undefined; 
+    
+    const updatedTicket = await ticket.save();
+
+    const populatedTicket = await Ticket.findById(updatedTicket._id)
+      .populate('stationId', 'stationNumber industryName location')
+      .populate('creatorId', 'name email')
+      .populate('assignedTo', 'name email')
+      .lean();
+
+    // Emit Socket Event to alert admin instantly
+    getIo().emit('ticket_updated', populatedTicket);
+
+    res.json({
+      success: true,
       data: updatedTicket,
     });
   } catch (error) {
