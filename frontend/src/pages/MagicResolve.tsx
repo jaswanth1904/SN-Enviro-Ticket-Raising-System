@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, AlertCircle, Send, Loader2 } from 'lucide-react';
+import api from '../services/api';
 
 export const MagicResolve: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // ticketId
@@ -21,21 +22,16 @@ export const MagicResolve: React.FC = () => {
 
     setStatus('loading');
     try {
-      const response = await fetch(`/api/v1/tickets/${id}/magic-resolve`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, notes })
-      });
-      const data = await response.json();
+      const response = await api.patch(`/tickets/${id}/magic-resolve`, { token, notes });
       
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to update ticket. The link may have expired.');
+      if (response.data.success) {
+        setStatus('success');
+      } else {
+        throw new Error(response.data.message || 'Failed to update ticket. The link may have expired.');
       }
-      
-      setStatus('success');
     } catch (err: any) {
       setStatus('error');
-      setErrorMsg(err.message);
+      setErrorMsg(err.response?.data?.message || err.message || 'An error occurred while connecting to the server.');
     }
   };
 
