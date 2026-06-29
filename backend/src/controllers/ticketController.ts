@@ -5,7 +5,7 @@ import Station from '../models/Station';
 import { AuthRequest } from '../middleware/authMiddleware';
 import User from '../models/User';
 import { getIo } from '../socket';
-import { sendRegistrationAcknowledgement, sendAssignmentNotification, sendResolutionNotice } from '../services/emailService';
+import { sendRegistrationAcknowledgement, sendAssignmentNotification, sendResolutionNotice, sendAdminNewTicketNotification } from '../services/emailService';
 
 // @desc    Create a new ticket
 // @route   POST /api/v1/tickets
@@ -121,6 +121,26 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
         ticket.remoteId,
         ticket.remotePassword
       ).catch(console.error);
+    }
+
+    // Notify all admins of the new ticket so they can review and assign
+    try {
+      const admins = await User.find({ role: 'admin' }).select('email');
+      const stationData: any = populatedTicket?.stationId;
+      const stationDetailsStr = stationData ? `${stationData.stationNumber} - ${stationData.industryName}` : 'Unknown Plant';
+      
+      for (const admin of admins) {
+        if (admin.email) {
+          sendAdminNewTicketNotification(
+            admin.email,
+            ticket.ticketId,
+            subject,
+            stationDetailsStr
+          ).catch(console.error);
+        }
+      }
+    } catch (adminNotifyErr) {
+      console.error('Error notifying admins about new ticket:', adminNotifyErr);
     }
 
     res.status(201).json({

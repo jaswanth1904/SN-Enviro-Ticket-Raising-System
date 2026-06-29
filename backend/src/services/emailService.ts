@@ -214,3 +214,27 @@ export const sendResolutionNotice = async (to: string, ticketId: string, resolut
   `;
   return sendEmail(to, `Ticket Resolved: ${ticketId}`, content);
 };
+
+export const sendAdminNewTicketNotification = async (
+  to: string,
+  ticketId: string,
+  subject: string,
+  stationDetails: string
+) => {
+  const content = `
+    <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">Hello Admin,</p>
+    <p>A new support ticket has been raised and requires your attention for assignment.</p>
+    
+    <div class="info-box">
+      <p><b>Ticket ID:</b> ${ticketId}</p>
+      <p><b>Subject:</b> ${subject}</p>
+      <p><b>Plant / Station:</b> ${stationDetails}</p>
+    </div>
+    
+    <p>Please log in to the admin portal to review the ticket and assign it to an engineer.</p>
+    <br/>
+    <p>Best regards,</p>
+    <p><b class="accent-blue">SN Enviro Ticket System</b></p>
+  `;
+  return sendEmail(to, `New Ticket Alert: ${ticketId}`, content);
+};
