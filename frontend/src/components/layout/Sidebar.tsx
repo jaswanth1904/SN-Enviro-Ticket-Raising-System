@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Ticket, Users, Settings, X, Bell } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, Settings, X, Bell, Contact } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -19,7 +19,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
     { label: 'Tickets', icon: Ticket, path: '/tickets', showTo: ['admin'] },
     { label: 'Alerts', icon: Bell, path: '/alerts', showTo: ['admin'] },
     { label: 'Engineers & Technicians', icon: Users, path: '/users', showTo: ['admin'] },
-    { label: 'Admin Account', icon: Settings, path: '/settings', showTo: ['admin', 'field_engineer'] },
+    { label: 'Employee Portal', icon: Contact, path: '/employees', showTo: ['admin', 'field_engineer'] },
   ];
 
   const filteredNavItems = navItems.filter(item => user && item.showTo.includes(user.role));

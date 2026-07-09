@@ -6,6 +6,7 @@ import { errorHandler, notFound } from './middleware/errorMiddleware';
 import authRoutes from './routes/authRoutes';
 import stationRoutes from './routes/stationRoutes';
 import ticketRoutes from './routes/ticketRoutes';
+import employeeRoutes from './routes/employeeRoutes';
 
 const app: Application = express();
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/stations', stationRoutes);
 app.use('/api/v1/tickets', ticketRoutes);
+app.use('/api/v1/employees', employeeRoutes);
 
 // Base route for health check
 app.get('/', (req, res) => {

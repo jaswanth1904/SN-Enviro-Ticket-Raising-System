@@ -12,6 +12,7 @@ import { Users } from './pages/Users';
 import { Settings } from './pages/Settings';
 import { MagicResolve } from './pages/MagicResolve';
 import { Alerts } from './pages/Alerts';
+import { EmployeePortal } from './pages/EmployeePortal';
 import ClientPortal from './pages/ClientPortal';
 
 // Dedicated Logout Handler Component
@@ -70,6 +71,7 @@ const AppRoutes = () => {
       <Route path="/resolve/:id" element={<MagicResolve />} />
       
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/employees" element={<ProtectedRoute><EmployeePortal /></ProtectedRoute>} />
       {/* Admin only routes */}
       <Route path="/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
       <Route path="/tickets" element={<AdminRoute><Tickets /></AdminRoute>} />
