@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { User, Lock, Save, Loader2 } from 'lucide-react';
+import { User, Lock, Save, Loader2, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const AdminPortal: React.FC = () => {
@@ -12,6 +12,9 @@ export const AdminPortal: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ export const AdminPortal: React.FC = () => {
         payload.currentPassword = currentPassword;
       }
 
-      const { data } = await axios.patch('/api/v1/auth/profile', payload);
+      const { data } = await axios.put('/api/v1/auth/profile', payload);
       
       toast.success('Profile updated successfully');
       
@@ -112,12 +115,19 @@ export const AdminPortal: React.FC = () => {
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  type="password"
+                  type={showCurrentPassword ? "text" : "password"}
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="pl-10 w-full rounded-lg border border-gray-300 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="pl-10 pr-10 w-full rounded-lg border border-gray-300 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   placeholder="Enter current password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
 
@@ -131,12 +141,19 @@ export const AdminPortal: React.FC = () => {
                     <Lock className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    type="password"
+                    type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="pl-10 w-full rounded-lg border border-gray-300 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                    className="pl-10 pr-10 w-full rounded-lg border border-gray-300 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     placeholder="Enter new password"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  >
+                    {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
               </div>
 
@@ -149,12 +166,19 @@ export const AdminPortal: React.FC = () => {
                     <Lock className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-10 w-full rounded-lg border border-gray-300 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                    className="pl-10 pr-10 w-full rounded-lg border border-gray-300 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     placeholder="Confirm new password"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
               </div>
             </div>
