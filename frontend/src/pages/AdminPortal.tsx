@@ -41,8 +41,9 @@ export const AdminPortal: React.FC = () => {
       
       toast.success('Profile updated successfully');
       
-      // If we had an update function in AuthContext, we'd call it.
-      // For now, we rely on the token still being valid. The name will update on next fetch or if we manually reload.
+      if (user && data.success) {
+        login({ ...user, ...data.data, token: user.token });
+      }
       // Reset password fields
       setCurrentPassword('');
       setNewPassword('');
