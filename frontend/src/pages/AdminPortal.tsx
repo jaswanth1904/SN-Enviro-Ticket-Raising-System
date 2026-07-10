@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { User, Lock, Save, Loader2, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -37,7 +37,7 @@ export const AdminPortal: React.FC = () => {
         payload.currentPassword = currentPassword;
       }
 
-      const { data } = await axios.post('/api/v1/auth/profile', payload);
+      const { data } = await api.put('/auth/profile', payload);
       
       toast.success('Profile updated successfully');
       
