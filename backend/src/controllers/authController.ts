@@ -119,6 +119,13 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     }
 
     if (req.body.password) {
+      if (req.body.currentPassword) {
+        const isMatch = await user.matchPassword(req.body.currentPassword);
+        if (!isMatch) {
+          res.status(400);
+          return next(new Error('Incorrect current password'));
+        }
+      }
       user.password = req.body.password;
     }
 

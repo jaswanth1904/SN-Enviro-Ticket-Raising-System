@@ -19,7 +19,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
     { label: 'Tickets', icon: Ticket, path: '/tickets', showTo: ['admin'] },
     { label: 'Alerts', icon: Bell, path: '/alerts', showTo: ['admin'] },
     { label: 'Engineers & Technicians', icon: Users, path: '/users', showTo: ['admin'] },
-    { label: 'Employee Portal', icon: Contact, path: '/employees', showTo: ['admin', 'field_engineer'] },
+    { label: 'Admin Portal', icon: Settings, path: '/admin-portal', showTo: ['admin'] },
   ];
 
   const filteredNavItems = navItems.filter(item => user && item.showTo.includes(user.role));
