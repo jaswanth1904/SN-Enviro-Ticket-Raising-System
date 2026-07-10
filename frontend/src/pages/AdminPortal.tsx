@@ -37,7 +37,7 @@ export const AdminPortal: React.FC = () => {
         payload.currentPassword = currentPassword;
       }
 
-      const { data } = await axios.put('/api/v1/auth/profile', payload);
+      const { data } = await axios.post('/api/v1/auth/profile', payload);
       
       toast.success('Profile updated successfully');
       
